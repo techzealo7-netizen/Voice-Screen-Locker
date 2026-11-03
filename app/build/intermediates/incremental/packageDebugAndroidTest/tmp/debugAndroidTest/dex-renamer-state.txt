@@ -1,0 +1,4 @@
+#Tue Nov 03 15:46:21 PKT 2026
+base.0=/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/dex/debugAndroidTest/mergeProjectDexDebugAndroidTest/0/classes.dex
+path.0=0/classes.dex
+renamed.0=classes.dex

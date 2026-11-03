@@ -1,0 +1,42 @@
+[
+    {
+        "merged": "com.voicelocker.app-debug-65:/drawable_theme1.png.flat",
+        "source": "com.voicelocker.app-main-67:/drawable/theme1.png"
+    },
+    {
+        "merged": "com.voicelocker.app-debug-65:/drawable_theme5.png.flat",
+        "source": "com.voicelocker.app-main-67:/drawable/theme5.png"
+    },
+    {
+        "merged": "com.voicelocker.app-debug-65:/drawable_theme6.png.flat",
+        "source": "com.voicelocker.app-main-67:/drawable/theme6.png"
+    },
+    {
+        "merged": "com.voicelocker.app-debug-65:/drawable_theme2.png.flat",
+        "source": "com.voicelocker.app-main-67:/drawable/theme2.png"
+    },
+    {
+        "merged": "com.voicelocker.app-debug-65:/drawable_theme4.png.flat",
+        "source": "com.voicelocker.app-main-67:/drawable/theme4.png"
+    },
+    {
+        "merged": "com.voicelocker.app-debug-65:/drawable_theme7.png.flat",
+        "source": "com.voicelocker.app-main-67:/drawable/theme7.png"
+    },
+    {
+        "merged": "com.voicelocker.app-debug-65:/drawable_ic_crown_premium.png.flat",
+        "source": "com.voicelocker.app-main-67:/drawable/ic_crown_premium.png"
+    },
+    {
+        "merged": "com.voicelocker.app-debug-65:/drawable_theme3.png.flat",
+        "source": "com.voicelocker.app-main-67:/drawable/theme3.png"
+    },
+    {
+        "merged": "com.voicelocker.app-debug-65:/drawable_theme8.png.flat",
+        "source": "com.voicelocker.app-main-67:/drawable/theme8.png"
+    },
+    {
+        "merged": "com.voicelocker.app-debug-65:/drawable_ic_crown_home.png.flat",
+        "source": "com.voicelocker.app-main-67:/drawable/ic_crown_home.png"
+    }
+]

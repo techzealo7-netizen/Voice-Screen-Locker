@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="gcm_defaultSenderId" translatable="false">978080974617</string>
+    <string name="google_api_key" translatable="false">AIzaSyBMeMfjkd3CudwdgEghPb7GwFZf3FjBB5g</string>
+    <string name="google_app_id" translatable="false">1:978080974617:android:697f0abc6a26e72e912788</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBMeMfjkd3CudwdgEghPb7GwFZf3FjBB5g</string>
+    <string name="google_storage_bucket" translatable="false">voice-lock-65f62.firebasestorage.app</string>
+    <string name="project_id" translatable="false">voice-lock-65f62</string>
+</resources>

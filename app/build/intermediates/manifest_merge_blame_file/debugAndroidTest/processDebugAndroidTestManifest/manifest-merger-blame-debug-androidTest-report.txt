@@ -1,0 +1,34 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.voicescreenlock.security.key.lock.voice.pin.pattern.voicelock.test" >
+4
+5    <uses-sdk
+5-->/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest16756882496802966176.xml:5:5-74
+6        android:minSdkVersion="24"
+6-->/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest16756882496802966176.xml:5:15-41
+7        android:targetSdkVersion="34" />
+7-->/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest16756882496802966176.xml:5:42-71
+8
+9    <instrumentation
+9-->/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest16756882496802966176.xml:11:5-15:115
+10        android:name="android.test.InstrumentationTestRunner"
+10-->/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest16756882496802966176.xml:11:22-75
+11        android:functionalTest="false"
+11-->/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest16756882496802966176.xml:14:22-52
+12        android:handleProfiling="false"
+12-->/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest16756882496802966176.xml:13:22-53
+13        android:label="Tests for com.voicescreenlock.security.key.lock.voice.pin.pattern.voicelock"
+13-->/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest16756882496802966176.xml:15:22-113
+14        android:targetPackage="com.voicescreenlock.security.key.lock.voice.pin.pattern.voicelock" />
+14-->/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest16756882496802966176.xml:12:22-111
+15
+16    <application
+16-->/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest16756882496802966176.xml:7:5-9:19
+17        android:debuggable="true"
+18        android:extractNativeLibs="false" >
+19        <uses-library android:name="android.test.runner" />
+19-->/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest16756882496802966176.xml:8:9-60
+19-->/Users/macmini/Downloads/VoiceScreenLocker/app/build/intermediates/tmp/manifest/androidTest/debug/tempFile1ProcessTestManifest16756882496802966176.xml:8:23-57
+20    </application>
+21
+22</manifest>
