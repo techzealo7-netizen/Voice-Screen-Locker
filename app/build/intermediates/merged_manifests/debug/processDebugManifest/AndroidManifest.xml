@@ -59,7 +59,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.voicelocker.app.LockActivity"
+            android:name="com.voicelocker.app.ui.screens.lock.LockActivity"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|uiMode"
             android:excludeFromRecents="true"
             android:exported="false"
@@ -69,7 +69,7 @@
             android:turnScreenOn="true" />
 
         <service
-            android:name="com.voicelocker.app.LockService"
+            android:name="com.voicelocker.app.service.LockService"
             android:exported="false"
             android:foregroundServiceType="specialUse" >
             <property
@@ -78,7 +78,7 @@
         </service>
 
         <receiver
-            android:name="com.voicelocker.app.BootReceiver"
+            android:name="com.voicelocker.app.service.BootReceiver"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

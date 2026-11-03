@@ -687,6 +687,7 @@ drawable fingerprint_dialog_error
 drawable fingerprint_dialog_fp_icon
 drawable googleg_disabled_color_18
 drawable googleg_standard_color_18
+drawable ic_ai_notes
 drawable ic_call_answer
 drawable ic_call_answer_low
 drawable ic_call_answer_video
@@ -694,7 +695,17 @@ drawable ic_call_answer_video_low
 drawable ic_call_decline
 drawable ic_call_decline_low
 drawable ic_crown_home
-drawable ic_crown_premium
+drawable ic_fingerprint
+drawable ic_lock
+drawable ic_mic_home
+drawable ic_nav_lock
+drawable ic_onb1
+drawable ic_onb2
+drawable ic_onb3
+drawable ic_onb4
+drawable ic_pattern
+drawable ic_settings
+drawable ic_splash
 drawable notification_action_background
 drawable notification_bg
 drawable notification_bg_low

@@ -118,8 +118,8 @@
 60        </activity>
 61        <activity
 61-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:34:9-42:116
-62            android:name="com.voicelocker.app.LockActivity"
-62-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:35:13-41
+62            android:name="com.voicelocker.app.ui.screens.lock.LockActivity"
+62-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:35:13-57
 63            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|uiMode"
 63-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:42:13-113
 64            android:excludeFromRecents="true"
@@ -137,8 +137,8 @@
 70
 71        <service
 71-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:44:9-51:19
-72            android:name="com.voicelocker.app.LockService"
-72-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:45:13-40
+72            android:name="com.voicelocker.app.service.LockService"
+72-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:45:13-48
 73            android:exported="false"
 73-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:46:13-37
 74            android:foregroundServiceType="specialUse" >
@@ -153,10 +153,10 @@
 79
 80        <receiver
 80-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:53:9-55:20
-81            android:name="com.voicelocker.app.BootReceiver"
-81-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:53:19-47
+81            android:name="com.voicelocker.app.service.BootReceiver"
+81-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:53:19-55
 82            android:exported="true" >
-82-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:53:48-71
+82-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:53:56-79
 83            <intent-filter>
 83-->/Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:54:13-106
 84                <action android:name="android.intent.action.BOOT_COMPLETED" />

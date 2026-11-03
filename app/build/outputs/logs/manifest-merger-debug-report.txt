@@ -248,7 +248,7 @@ category#android.intent.category.LAUNCHER
 ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:30:17-77
 	android:name
 		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:30:27-74
-activity#com.voicelocker.app.LockActivity
+activity#com.voicelocker.app.ui.screens.lock.LockActivity
 ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:34:9-42:116
 	android:turnScreenOn
 		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:40:13-40
@@ -265,27 +265,27 @@ ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManife
 	android:taskAffinity
 		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:41:13-36
 	android:name
-		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:35:13-41
-service#com.voicelocker.app.LockService
+		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:35:13-57
+service#com.voicelocker.app.service.LockService
 ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:44:9-51:19
 	android:exported
 		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:46:13-37
 	android:foregroundServiceType
 		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:47:13-55
 	android:name
-		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:45:13-40
+		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:45:13-48
 property#android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE
 ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:48:13-50:47
 	android:value
 		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:50:17-44
 	android:name
 		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:49:17-76
-receiver#com.voicelocker.app.BootReceiver
+receiver#com.voicelocker.app.service.BootReceiver
 ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:53:9-55:20
 	android:exported
-		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:53:48-71
+		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:53:56-79
 	android:name
-		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:53:19-47
+		ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:53:19-55
 intent-filter#action:name:android.intent.action.BOOT_COMPLETED
 ADDED from /Users/macmini/Downloads/VoiceScreenLocker/app/src/main/AndroidManifest.xml:54:13-106
 action#android.intent.action.BOOT_COMPLETED

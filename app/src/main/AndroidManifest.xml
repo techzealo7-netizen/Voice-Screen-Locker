@@ -32,7 +32,7 @@
         </activity>
 
         <activity
-            android:name=".LockActivity"
+            android:name=".ui.screens.lock.LockActivity"
             android:exported="false"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
@@ -42,7 +42,7 @@
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|uiMode" />
 
         <service
-            android:name=".LockService"
+            android:name=".service.LockService"
             android:exported="false"
             android:foregroundServiceType="specialUse">
             <property
@@ -50,7 +50,7 @@
                 android:value="screen_lock" />
         </service>
 
-        <receiver android:name=".BootReceiver" android:exported="true">
+        <receiver android:name=".service.BootReceiver" android:exported="true">
             <intent-filter><action android:name="android.intent.action.BOOT_COMPLETED" /></intent-filter>
         </receiver>
     </application>
