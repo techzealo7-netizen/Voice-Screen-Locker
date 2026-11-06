@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.voicelocker.app-mergeDebugResources-63:/values-v30/values-v30.xml",
+            "outputFile": "com.voicelocker.app-mergeDebugResources-73:/values-v30/values-v30.xml",
             "map": [
                 {
                     "source": "/Users/macmini/.gradle/caches/9.3.0/transforms/15a3b70ea73b8d2a1a1704d5a9824305/transformed/material3-release/res/values-v30/values-v30.xml",

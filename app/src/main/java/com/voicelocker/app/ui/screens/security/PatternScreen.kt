@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.voicelocker.ads.AppAdaptiveBannerTop
+import com.voicelocker.ads.AppNativeAdView
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.ui.components.Muted
 import com.voicelocker.app.ui.components.Page
@@ -26,7 +28,13 @@ fun PatternScreen(nav: NavHostController) {
     var err by remember { mutableStateOf(false) }
     var hint by remember { mutableStateOf<String?>(null) }
 
-    Page("Set Pattern Lock", onBack = { nav.popBackStack() }, scroll = false) {
+    Page(
+        title = "Set Pattern Lock",
+        onBack = { nav.popBackStack() },
+        scroll = false,
+        adScreenKey = "set_pattern_lock_screen",
+        nativeTemplate = 1
+    ) {
         StepDots(stage, err)
         Column(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             if (err) {
@@ -46,6 +54,7 @@ fun PatternScreen(nav: NavHostController) {
                 }
             })
         }
+        Spacer(Modifier.height(8.dp))
     }
 }
 

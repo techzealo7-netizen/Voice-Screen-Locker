@@ -1,90 +1,314 @@
 [
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_theme4.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/theme4.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_mic_home.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_mic_home.png"
     },
     {
-        "merged": "com.voicelocker.app-debug-65:/drawable_ic_mic_home.png.flat",
-        "source": "com.voicelocker.app-main-67:/drawable/ic_mic_home.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_onb4.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_onb4.webp"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_theme3.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/theme3.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_shape_circle_close.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/shape_circle_close.xml"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_ic_onb1.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/ic_onb1.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_ai_notes.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_ai_notes.png"
     },
     {
-        "merged": "com.voicelocker.app-debug-65:/drawable_ic_ai_notes.png.flat",
-        "source": "com.voicelocker.app-main-67:/drawable/ic_ai_notes.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_nav_lock.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_nav_lock.webp"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_ic_onb3.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/ic_onb3.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme6.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme6.webp"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_theme6.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/theme6.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme7.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme7.png"
     },
     {
-        "merged": "com.voicelocker.app-debug-65:/drawable_ic_fingerprint.png.flat",
-        "source": "com.voicelocker.app-main-67:/drawable/ic_fingerprint.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_onb1.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_onb1.png"
     },
     {
-        "merged": "com.voicelocker.app-debug-65:/drawable_ic_pattern.png.flat",
-        "source": "com.voicelocker.app-main-67:/drawable/ic_pattern.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme3.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme3.png"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_ic_crown_home.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/ic_crown_home.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_onb1.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_onb1.webp"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_ic_onb2.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/ic_onb2.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme3.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme3.webp"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_theme5.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/theme5.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_splash.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_splash.png"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_ic_splash.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/ic_splash.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_nav_lock.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_nav_lock.png"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_ic_onb4.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/ic_onb4.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/font_inter_medium.ttf.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/font/inter_medium.ttf"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_theme1.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/theme1.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/layout_layout_shimmer_native_medium.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/layout/layout_shimmer_native_medium.xml"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_theme2.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/theme2.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_overlay.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_overlay.png"
     },
     {
-        "merged": "com.voicelocker.app-debug-65:/drawable_ic_settings.png.flat",
-        "source": "com.voicelocker.app-main-67:/drawable/ic_settings.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/layout_ads_google_small_native.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/layout/ads_google_small_native.xml"
     },
     {
-        "merged": "com.voicelocker.app-debug-65:/drawable_ic_nav_lock.png.flat",
-        "source": "com.voicelocker.app-main-67:/drawable/ic_nav_lock.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_onb2.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_onb2.webp"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_theme7.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/theme7.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_lock.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_lock.png"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_theme8.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/theme8.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme1.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme1.png"
     },
     {
-        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-65:/drawable_ic_crown_premium.png.flat",
-        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-67:/drawable/ic_crown_premium.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_mic_home.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_mic_home.webp"
     },
     {
-        "merged": "com.voicelocker.app-debug-65:/drawable_ic_lock.png.flat",
-        "source": "com.voicelocker.app-main-67:/drawable/ic_lock.png"
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_star.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_star.webp"
+    },
+    {
+        "merged": "com.voicelocker.app-debug-75:/drawable_ic_premium.png.flat",
+        "source": "com.voicelocker.app-main-77:/drawable/ic_premium.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/layout_layout_shimmer_native_small.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/layout/layout_shimmer_native_small.xml"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_crown_home.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_crown_home.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_cross_ic.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/cross_ic.xml"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme8.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme8.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ia_app_icon.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ia_app_icon.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme4.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme4.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_shape_round_media.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/shape_round_media.xml"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_onb3.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_onb3.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/font_inter_light.ttf.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/font/inter_light.ttf"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_pattern.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_pattern.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_crown_home.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_crown_home.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme1.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme1.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_onb2.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_onb2.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_shape_round_stroke.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/shape_round_stroke.xml"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_pattern.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_pattern.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_bg_native_ad_border.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/bg_native_ad_border.xml"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/layout_ads_google_large_native.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/layout/ads_google_large_native.xml"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_fingerprint.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_fingerprint.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_ai_notes.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_ai_notes.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_lock2.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_lock2.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_settings.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_settings.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_call.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_call.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/layout_layout_shimmer_native_large.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/layout/layout_shimmer_native_large.xml"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme2.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme2.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_voice_lock.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_voice_lock.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_mic.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_mic.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_preview.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_preview.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_mic.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_mic.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_lock.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_lock.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/font_inter_semibold.ttf.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/font/inter_semibold.ttf"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme2.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme2.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_overlay.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_overlay.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme8.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme8.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/font_inter_regular.ttf.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/font/inter_regular.ttf"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_settings.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_settings.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme7.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme7.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_voice_note.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_voice_note.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_call.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_call.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_star.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_star.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_onb3.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_onb3.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme5.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme5.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/layout_layout_shimmer_native_full_screen.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/layout/layout_shimmer_native_full_screen.xml"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_voice_note.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_voice_note.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_lock2.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_lock2.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme4.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme4.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_fingerprint.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_fingerprint.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/layout_ads_google_medium_native.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/layout/ads_google_medium_native.xml"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_voice_lock.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_voice_lock.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_preview.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_preview.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/layout_layout_native_full_screen.xml.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/layout/layout_native_full_screen.xml"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/font_inter_bold.ttf.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/font/inter_bold.ttf"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme5.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme5.webp"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_theme6.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/theme6.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_onb4.png.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_onb4.png"
+    },
+    {
+        "merged": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-debug-75:/drawable_ic_splash.webp.flat",
+        "source": "/Users/macmini/.gradle/daemon/9.3.0/com.voicelocker.app-main-77:/drawable/ic_splash.webp"
     }
 ]

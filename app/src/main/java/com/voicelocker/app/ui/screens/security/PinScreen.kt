@@ -1,46 +1,44 @@
 package com.voicelocker.app.ui.screens.security
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Undo
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.voicelocker.ads.AppAdaptiveBannerTop
+import com.voicelocker.ads.AppNativeAdView
+import com.voicelocker.app.R
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.ui.components.*
 import com.voicelocker.app.ui.navigation.go
+import com.voicelocker.app.ui.theme.InterFontFamily
 import kotlinx.coroutines.delay
 
 @Composable
 fun PinScreen(nav: NavHostController, flow: String) {
-    var stage by remember { mutableIntStateOf(1) }
+    var stage by remember { mutableIntStateOf(1) } // 1 enter pin, 2 confirm pin
     var first by remember { mutableStateOf("") }
     var cur by remember { mutableStateOf("") }
     var err by remember { mutableStateOf(false) }
-    var showPin by remember { mutableStateOf(false) }
+    var showPin by remember { mutableStateOf(true) }
     val from = if (flow == "voice") "pin" else "setup"
     val c = MaterialTheme.colorScheme
-
-    fun handleUndo() {
-        if (err) {
-            err = false
-            cur = ""
-        } else if (cur.isNotEmpty()) {
-            cur = cur.dropLast(1)
-        } else if (stage == 2) {
-            stage = 1
-            cur = first
-            first = ""
-        }
-    }
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+    val isCompact = screenHeight < 820
+    val isSmall = screenHeight < 720
+    val isVerySmall = screenHeight < 660
 
     LaunchedEffect(cur) {
         if (cur.length == 4 && !err) {
@@ -60,96 +58,139 @@ fun PinScreen(nav: NavHostController, flow: String) {
 
     Page(
         title = "Set Pin Lock",
-        onBack = { nav.popBackStack() },
-        scroll = false,
-        actions = {
-            IconButton(
-                onClick = { handleUndo() },
-                enabled = cur.isNotEmpty() || stage == 2 || err
-            ) {
-                Icon(
-                    Icons.AutoMirrored.Filled.Undo,
-                    contentDescription = "Undo",
-                    tint = if (cur.isNotEmpty() || stage == 2 || err) c.primary else c.onSurfaceVariant.copy(alpha = 0.4f)
-                )
-            }
-            IconButton(onClick = { showPin = !showPin }) {
-                Icon(
-                    if (showPin) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                    contentDescription = if (showPin) "Hide PIN" else "Show PIN",
-                    tint = if (showPin) c.primary else c.onSurfaceVariant
-                )
+        onBack = {
+            if (stage == 2 && !err) {
+                stage = 1
+                cur = ""
+                first = ""
+            } else {
+                nav.popBackStack()
             }
         },
+        scroll = false,
+        adScreenKey = "set_pin_lock_screen",
+        nativeTemplate = 1,
         bottom = {
-            Box(Modifier.fillMaxWidth(), Alignment.Center) {
-                NumPad(
-                    onDigit = { if (cur.length < 4 && !err) cur += it },
-                    onDelete = { if (!err && cur.isNotEmpty()) cur = cur.dropLast(1) },
-                    onUndo = { handleUndo() }
-                )
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = c.surface,
+                border = BorderStroke(1.dp, c.outline),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = if (isVerySmall) 4.dp else if (isSmall) 6.dp else 8.dp,
+                            bottom = if (isVerySmall) 4.dp else if (isSmall) 6.dp else 8.dp
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    NumPad(
+                        onDigit = { digit ->
+                            if (err) {
+                                cur = digit
+                                err = false
+                                stage = 1
+                                first = ""
+                            } else if (cur.length < 4) {
+                                cur += digit
+                            }
+                        },
+                        onDelete = {
+                            if (err) {
+                                cur = ""
+                                err = false
+                                stage = 1
+                                first = ""
+                            } else if (cur.isNotEmpty()) {
+                                cur = cur.dropLast(1)
+                            }
+                        }
+                    )
+                }
             }
         }
     ) {
-        StepDots(stage, err)
-        Column(Modifier.weight(1f).fillMaxWidth(), Arrangement.Center, Alignment.CenterHorizontally) {
-            if (err) Text("Incorrect PIN. Please try again.", color = MaterialTheme.colorScheme.error)
-            else Text(if (stage == 1) "Enter your pin" else "Confirm your pin")
-            PinDots(cur.length, error = err, digits = cur, showPin = showPin)
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = if (isVerySmall) 2.dp else if (isSmall) 4.dp else 6.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
+                StepDots(step = if (err) 2 else stage, error = err)
+                Spacer(Modifier.height(if (isVerySmall) 2.dp else if (isSmall) 4.dp else 8.dp))
+
+                Text(
+                    text = if (err) "Incorrect PIN. Please try again."
+                           else if (stage == 1) "Enter your pin"
+                           else "Confirm your pin",
+                    color = if (err) c.error else c.onBackground,
+                    fontFamily = InterFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = if (isVerySmall) 13.sp else if (isSmall) 14.sp else 16.sp,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(Modifier.height(if (isVerySmall) 2.dp else if (isSmall) 4.dp else 6.dp))
+
+                // Pin dots and Preview icon row
                 Row(
-                    Modifier
-                        .clickable { showPin = !showPin }
-                        .padding(horizontal = 8.dp, vertical = 6.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Icon(
-                        if (showPin) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
-                        null,
-                        tint = if (showPin) c.primary else c.onSurfaceVariant,
-                        modifier = Modifier.size(16.dp)
+                    PinDots(
+                        filled = cur.length,
+                        error = err,
+                        digits = cur,
+                        showPin = showPin
                     )
-                    Spacer(Modifier.width(6.dp))
-                    Text(
-                        if (showPin) "Hide PIN" else "Show PIN",
-                        fontSize = 12.sp,
-                        color = if (showPin) c.primary else c.onSurfaceVariant
-                    )
+
+                    Spacer(Modifier.width(if (isSmall) 8.dp else 12.dp))
+
+                    IconButton(
+                        onClick = { showPin = !showPin },
+                        modifier = Modifier.size(if (isSmall) 28.dp else 32.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_preview),
+                            contentDescription = if (showPin) "Hide PIN" else "Show PIN",
+                            modifier = Modifier.size(if (isSmall) 16.dp else 18.dp)
+                        )
+                    }
                 }
 
-                if (cur.isNotEmpty() || stage == 2 || err) {
-                    Row(
-                        Modifier
-                            .clickable { handleUndo() }
-                            .padding(horizontal = 8.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                if (err) {
+                    Spacer(Modifier.height(if (isVerySmall) 4.dp else if (isSmall) 6.dp else 10.dp))
+                    Button(
+                        onClick = {
+                            cur = ""
+                            err = false
+                            stage = 1
+                            first = ""
+                        },
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = c.primary),
+                        modifier = Modifier
+                            .height(if (isVerySmall) 32.dp else if (isSmall) 36.dp else 40.dp)
+                            .width(if (isSmall) 105.dp else 120.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp)
                     ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.Undo,
-                            null,
-                            tint = c.primary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(Modifier.width(6.dp))
                         Text(
-                            "Undo",
-                            fontSize = 12.sp,
-                            color = c.primary,
-                            fontWeight = FontWeight.Medium
+                            text = "Retry",
+                            color = Color.White,
+                            fontSize = if (isSmall) 13.sp else 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = InterFontFamily
                         )
                     }
                 }
             }
-
-            if (err) {
-                Spacer(Modifier.height(10.dp))
-                AppButton("Retry", { err = false; cur = ""; first = ""; stage = 1 }, Modifier.width(130.dp), kind = Btn.Primary)
-            }
         }
     }
 }
-

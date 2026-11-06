@@ -1,10 +1,22 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.voicelocker.app.ui.screens.notes
 
 import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -12,17 +24,26 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
+import com.voicelocker.ads.AppAdaptiveBannerTop
+import com.voicelocker.ads.AppNativeAdView
+import com.voicelocker.ads.AppOpenAdManager
+import com.voicelocker.app.R
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.data.model.Note
 import com.voicelocker.app.ui.components.*
+import com.voicelocker.app.ui.theme.InterFontFamily
 import com.voicelocker.app.util.toast
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -41,36 +62,114 @@ private fun NoteTile(
     Surface(
         onClick = onOpen,
         modifier = modifier,
-        shape = RoundedCornerShape(14.dp),
-        color = MaterialTheme.colorScheme.surface
+        shape = RoundedCornerShape(16.dp),
+        color = Color.White
     ) {
-        Box(Modifier.padding(6.dp)) {
+        Box(Modifier.padding(10.dp)) {
             Box(Modifier.align(Alignment.TopEnd)) {
                 IconButton({ menu = true }, Modifier.size(24.dp)) {
-                    Icon(Icons.Filled.MoreVert, "Menu", Modifier.size(16.dp))
+                    Icon(
+                        imageVector = Icons.Filled.MoreVert,
+                        contentDescription = "Menu",
+                        modifier = Modifier.size(18.dp),
+                        tint = Color(0xFF8B93A7)
+                    )
                 }
-                DropdownMenu(menu, { menu = false }) {
+                DropdownMenu(
+                    expanded = menu,
+                    onDismissRequest = { menu = false },
+                    modifier = Modifier.background(Color.White)
+                ) {
                     DropdownMenuItem(
-                        text = { Text("Edit") },
+                        text = {
+                            Text(
+                                text = "Edit",
+                                fontFamily = InterFontFamily,
+                                fontSize = 14.sp,
+                                color = Color(0xFF1E2022)
+                            )
+                        },
                         onClick = { menu = false; onEdit() },
-                        leadingIcon = { Icon(Icons.Filled.Edit, null) }
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = null,
+                                tint = Color(0xFF1E2022),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                     )
                     DropdownMenuItem(
-                        text = { Text("Delete", color = MaterialTheme.colorScheme.error) },
+                        text = {
+                            Text(
+                                text = "Delete",
+                                color = Color(0xFFEF4444),
+                                fontFamily = InterFontFamily,
+                                fontSize = 14.sp
+                            )
+                        },
                         onClick = { menu = false; onDelete() },
-                        leadingIcon = { Icon(Icons.Filled.Delete, null, tint = MaterialTheme.colorScheme.error) }
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.Delete,
+                                contentDescription = null,
+                                tint = Color(0xFFEF4444),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                     )
                     DropdownMenuItem(
-                        text = { Text("AI Summary") },
+                        text = {
+                            Text(
+                                text = "AI Summary",
+                                fontFamily = InterFontFamily,
+                                fontSize = 14.sp,
+                                color = Color(0xFF1E2022)
+                            )
+                        },
                         onClick = { menu = false; onAi() },
-                        leadingIcon = { Icon(Icons.Filled.AutoAwesome, null) }
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.AutoAwesome,
+                                contentDescription = null,
+                                tint = Color(0xFF1E2022),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                     )
                 }
             }
-            Column(Modifier.align(Alignment.Center), horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(Icons.Filled.Description, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(34.dp))
-                Text(n.title, fontSize = 12.sp, maxLines = 1)
-                Muted(SimpleDateFormat("d MMM yyyy", Locale.getDefault()).format(Date(n.created)), 9)
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(top = 10.dp, bottom = 4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_voice_note),
+                    contentDescription = null,
+                    modifier = Modifier.size(42.dp)
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    text = n.title,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = InterFontFamily,
+                    color = Color(0xFF1E2022),
+                    maxLines = 1,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = SimpleDateFormat("EEEE d MMMM yyyy,\nhh:mma", Locale.getDefault()).format(Date(n.created)),
+                    fontSize = 9.sp,
+                    fontFamily = InterFontFamily,
+                    color = Color(0xFF8B93A7),
+                    textAlign = TextAlign.Center,
+                    lineHeight = 12.sp
+                )
             }
         }
     }
@@ -83,46 +182,171 @@ fun NotesTab(nav: NavHostController) {
     val notes = Store.notes
     var askMic by remember { mutableStateOf(false) }
     var del by remember { mutableStateOf<Note?>(null) }
-    val micL = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
-        if (it) nav.navigate("noteEdit") else ctx.toast("Microphone permission is required.")
+    val micL = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        AppOpenAdManager.suppressAppOpenFor(5000L)
+        if (granted) {
+            nav.navigate("noteEdit")
+        } else {
+            askMic = true
+        }
     }
-    val cols = if (LocalConfiguration.current.screenWidthDp >= 600) 5 else 3
 
-    TabColumn {
-        Text("Voice Notes", Modifier.fillMaxWidth(), textAlign = TextAlign.Center, fontSize = 16.sp, fontWeight = FontWeight.Medium)
-        if (notes.isEmpty()) {
-            Column(Modifier.fillMaxWidth().padding(top = 70.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(Icons.Filled.SmartToy, null, Modifier.size(120.dp), tint = c.primaryContainer)
-                Spacer(Modifier.height(12.dp))
-                Text("No voice notes available.", fontWeight = FontWeight.SemiBold)
-                Muted("Start recording to create your first voice note.")
-                Spacer(Modifier.height(40.dp))
-                AppButton("Create Now", { askMic = true })
+    fun startCreate() {
+        val hasMic = ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+        if (hasMic) {
+            nav.navigate("noteEdit")
+        } else {
+            AppOpenAdManager.suppressAppOpenFor(60_000L)
+            micL.launch(Manifest.permission.RECORD_AUDIO)
+        }
+    }
+    val cols = if (LocalConfiguration.current.screenWidthDp >= 600) 4 else 2
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        // Fixed Top Header & Banner
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(c.background)
+        ) {
+            Text(
+                text = "Voice Notes",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 12.dp, bottom = 6.dp),
+                textAlign = TextAlign.Center,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = InterFontFamily,
+                color = c.onBackground
+            )
+            AppAdaptiveBannerTop("voice_note_screen")
+        }
+
+        // Scrollable Middle Content
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            Column(
+                modifier = Modifier
+                    .widthIn(max = MaxContentWidth)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                if (notes.isEmpty()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 60.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_voice_note),
+                    contentDescription = null,
+                    modifier = Modifier.size(130.dp)
+                )
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    text = "No voice notes available.",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    fontFamily = InterFontFamily,
+                    color = Color(0xFF1E2022)
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    text = "Start recording to create your first voice note.",
+                    color = Color(0xFF8B93A7),
+                    fontSize = 12.sp,
+                    fontFamily = InterFontFamily,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(Modifier.height(36.dp))
+                AppButton("Create Now", { startCreate() })
             }
         } else {
             Spacer(Modifier.height(14.dp))
-            ColCard(pad = 14.dp) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = Color.White,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Column(Modifier.weight(1f)) {
-                        Text("Voice Note", fontWeight = FontWeight.SemiBold)
-                        Muted("Private Voice Diary, only yours", 10)
+                        Text(
+                            text = "Voice Note",
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = InterFontFamily,
+                            fontSize = 16.sp,
+                            color = Color(0xFF1E2022)
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = "Private Voice Diary, only yours",
+                            fontSize = 11.sp,
+                            fontFamily = InterFontFamily,
+                            color = Color(0xFF8B93A7)
+                        )
                     }
-                    Button({ askMic = true }, colors = ButtonDefaults.buttonColors(containerColor = c.primary)) {
-                        Text("Create Now")
+                    Button(
+                        onClick = { startCreate() },
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = c.primary),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Text(
+                            text = "Create Now",
+                            fontFamily = InterFontFamily,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 13.sp,
+                            color = Color.White
+                        )
                     }
                 }
             }
-            Row(Modifier.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Filled.FolderOpen, null, tint = c.primary, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(6.dp))
-                Text("My Notes", fontWeight = FontWeight.SemiBold)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp, bottom = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.FolderOpen,
+                    contentDescription = null,
+                    tint = c.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = "My Notes",
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = InterFontFamily,
+                    fontSize = 16.sp,
+                    color = Color(0xFF1E2022)
+                )
             }
             notes.chunked(cols).forEach { row ->
-                Row(Modifier.fillMaxWidth().padding(bottom = 10.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     row.forEach { n ->
                         NoteTile(
-                            n,
-                            Modifier.weight(1f).aspectRatio(1f),
+                            n = n,
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f),
                             onOpen = { nav.navigate("note/${n.id}") },
                             onEdit = { nav.navigate("noteEdit?id=${n.id}") },
                             onDelete = { del = n },
@@ -132,31 +356,227 @@ fun NotesTab(nav: NavHostController) {
                     repeat(cols - row.size) { Spacer(Modifier.weight(1f)) }
                 }
             }
+            Spacer(Modifier.height(8.dp))
         }
-    }
-    if (askMic) AlertDialog(
-        onDismissRequest = { askMic = false },
-        icon = { MicButton(30.dp, Color.Transparent, c.primary) },
-        title = { Text("Allow Microphone Access", fontSize = 16.sp) },
-        text = { Text("Allow microphone access to record and manage your voice notes.", fontSize = 12.sp, textAlign = TextAlign.Center) },
-        confirmButton = { TextButton({ askMic = false; micL.launch(Manifest.permission.RECORD_AUDIO) }) { Text("Ok") } },
-        dismissButton = { TextButton({ askMic = false }) { Text("Cancel") } }
-    )
-    del?.let { n ->
-        AlertDialog(
-            onDismissRequest = { del = null },
-            icon = { Icon(Icons.Filled.Delete, null, tint = c.error, modifier = Modifier.size(56.dp)) },
-            title = { Text("Delete Voice Note?", fontSize = 16.sp) },
-            confirmButton = {
-                TextButton({
-                    Store.saveNotes(Store.notes.filter { it.id != n.id })
-                    del = null
-                }) {
-                    Text("Delete", color = c.error)
-                }
-            },
-            dismissButton = { TextButton({ del = null }) { Text("Cancel") } }
-        )
     }
 }
 
+    // Fixed Bottom Native Ad
+    AppNativeAdView(
+        screenKey = "voice_note_screen",
+        template = 1,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 14.dp)
+    )
+}
+
+    if (askMic) {
+        Dialog(
+            onDismissRequest = { askMic = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 28.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 28.dp, bottom = 20.dp, start = 20.dp, end = 20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(68.dp)
+                            .clip(CircleShape)
+                            .background(c.primary),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Mic,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(34.dp)
+                        )
+                    }
+
+                    Spacer(Modifier.height(18.dp))
+
+                    Text(
+                        text = "Allow Microphone Access",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = InterFontFamily,
+                        color = Color(0xFF1E2022),
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Text(
+                        text = "Allow microphone access to record and\nmanage your voice notes.",
+                        fontSize = 12.sp,
+                        fontFamily = InterFontFamily,
+                        color = Color(0xFF8B93A7),
+                        textAlign = TextAlign.Center,
+                        lineHeight = 17.sp
+                    )
+
+                    Spacer(Modifier.height(24.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Button(
+                            onClick = { askMic = false },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFCBE3FB),
+                                contentColor = Color(0xFF1789F4)
+                            ),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp)
+                        ) {
+                            Text(
+                                text = "Cancel",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = InterFontFamily,
+                                color = Color(0xFF1789F4)
+                            )
+                        }
+
+                        Button(
+                            onClick = {
+                                askMic = false
+                                AppOpenAdManager.suppressAppOpenFor(60_000L)
+                                runCatching {
+                                    ctx.startActivity(
+                                        Intent(
+                                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                            Uri.parse("package:${ctx.packageName}")
+                                        )
+                                    )
+                                }.onFailure {
+                                    micL.launch(Manifest.permission.RECORD_AUDIO)
+                                }
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = c.primary,
+                                contentColor = Color.White
+                            ),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp)
+                        ) {
+                            Text(
+                                text = "Settings",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = InterFontFamily,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    del?.let { n ->
+        Dialog(
+            onDismissRequest = { del = null },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Surface(
+                shape = RoundedCornerShape(20.dp),
+                color = Color.White,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 28.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 28.dp, bottom = 20.dp, start = 20.dp, end = 20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = null,
+                        tint = Color(0xFFEF4444),
+                        modifier = Modifier.size(52.dp)
+                    )
+
+                    Spacer(Modifier.height(16.dp))
+
+                    Text(
+                        text = "Delete Voice Note?",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = InterFontFamily,
+                        color = Color(0xFF1E2022),
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(Modifier.height(24.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Button(
+                            onClick = { del = null },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFCBE3FB),
+                                contentColor = Color(0xFF1789F4)
+                            ),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp)
+                        ) {
+                            Text(
+                                text = "Cancel",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = InterFontFamily,
+                                color = Color(0xFF1789F4)
+                            )
+                        }
+
+                        Button(
+                            onClick = {
+                                Store.saveNotes(Store.notes.filter { it.id != n.id })
+                                del = null
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFEF4444),
+                                contentColor = Color.White
+                            ),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(48.dp)
+                        ) {
+                            Text(
+                                text = "Delete",
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = InterFontFamily,
+                                color = Color.White
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -6,5 +6,6 @@ import androidx.compose.runtime.setValue
 
 object UiBus {
     var success by mutableStateOf<String?>(null)
+    var onDismissSuccess: (() -> Unit)? = null
 }
 

@@ -51,12 +51,17 @@ fun VoiceLockTheme(content: @Composable () -> Unit) {
     }
     val view = LocalView.current
     SideEffect {
+        com.voicelocker.ads.ThemeManager.setDarkMode(dark)
         (view.context as? Activity)?.window?.let {
             val c = WindowCompat.getInsetsController(it, view)
             c.isAppearanceLightStatusBars = !dark
             c.isAppearanceLightNavigationBars = !dark
         }
     }
-    MaterialTheme(colorScheme = if (dark) DarkScheme else LightScheme, content = content)
+    MaterialTheme(
+        colorScheme = if (dark) DarkScheme else LightScheme,
+        typography = AppTypography,
+        content = content
+    )
 }
 

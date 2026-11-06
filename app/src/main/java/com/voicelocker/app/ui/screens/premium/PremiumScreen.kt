@@ -1,18 +1,29 @@
 package com.voicelocker.app.ui.screens.premium
 
+import android.app.Activity
+import android.content.Intent
+import android.net.Uri
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.VolumeOff
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,200 +31,359 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.voicelocker.ads.AdLoadingDialog
+import com.voicelocker.ads.AdManager
+import com.voicelocker.ads.InterstitialAdManager
 import com.voicelocker.app.R
-import com.voicelocker.app.ui.components.AppButton
-import com.voicelocker.app.ui.components.Muted
-import com.voicelocker.app.ui.components.Page
-import com.voicelocker.app.ui.theme.CrownGold
+import com.voicelocker.app.data.local.Store
+import com.voicelocker.app.ui.navigation.NavRoutes
+import com.voicelocker.app.ui.theme.Blue
+import com.voicelocker.app.ui.theme.InterFontFamily
 import com.voicelocker.app.util.toast
+import kotlinx.coroutines.delay
+
+private data class PremiumPlan(
+    val title: String,
+    val price: String
+)
 
 @Composable
-fun PremiumScreen(nav: NavHostController) {
-    val c = MaterialTheme.colorScheme
+fun PremiumScreen(
+    nav: NavHostController,
+    from: String? = null
+) {
     val ctx = LocalContext.current
-    val config = LocalConfiguration.current
-    val isCompact = config.screenHeightDp < 700
+    val activity = ctx as? Activity
+    val c = MaterialTheme.colorScheme
+    val isDark = c.background == Color(0xFF0E1320)
 
-    var plan by remember { mutableIntStateOf(1) }
-    val plans = listOf("Weekly" to "Rs 500/wk", "Monthly" to "Rs 1000/mo", "Yearly" to "Rs 1500/yr")
+    var selectedPlanIndex by remember { mutableIntStateOf(1) } // Default to Monthly (1)
+    var loadingAd by remember { mutableStateOf(false) }
 
-    Page(
-        title = "",
-        onBack = { nav.popBackStack() },
-        scroll = false,
-        bottom = {
-            AppButton(
-                "Start 3 days free trial",
-                { ctx.toast("Connect Google Play Billing to enable purchases") },
-                modifier = Modifier.height(if (isCompact) 44.dp else 48.dp)
-            )
-            Row(
-                Modifier.fillMaxWidth().padding(top = if (isCompact) 4.dp else 8.dp),
-                Arrangement.SpaceBetween
-            ) {
-                listOf("Privacy Policy", "Cancel", "Terms of use").forEach { Muted(it, if (isCompact) 9 else 10) }
-            }
+    var startAnimation by remember { mutableStateOf(false) }
+    var isTimerComplete by remember { mutableStateOf(false) }
+    var remainingSeconds by remember { mutableIntStateOf(3) }
+
+    val progressAnim by animateFloatAsState(
+        targetValue = if (startAnimation) 1f else 0f,
+        animationSpec = tween(durationMillis = 3000, easing = LinearEasing),
+        label = "circular_timer_progress"
+    )
+
+    LaunchedEffect(Unit) {
+        startAnimation = true
+        for (sec in 3 downTo 1) {
+            remainingSeconds = sec
+            delay(1000L)
         }
+        isTimerComplete = true
+    }
+
+    val plans = listOf(
+        PremiumPlan("Weekly", "Rs 500/wk"),
+        PremiumPlan("Monthly", "Rs 1000/mo"),
+        PremiumPlan("Yearly", "Rs 1500/yr")
+    )
+
+    val features = listOf(
+        "Ai Voice Lock",
+        "Unlock All Feature",
+        "Themes",
+        "Remove Ads"
+    )
+
+    LaunchedEffect(Unit) {
+        InterstitialAdManager.preload("in_app_screen", "interstitial")
+    }
+
+    val proceedToDestination: () -> Unit = {
+        if (from == "onboarding" || from == "splash") {
+            Store.onboarded = true
+            nav.navigate(NavRoutes.MAIN) {
+                popUpTo(0) { inclusive = true }
+            }
+        } else {
+            nav.popBackStack()
+        }
+    }
+
+    val handleDismiss: () -> Unit = {
+        if (activity != null) {
+            InterstitialAdManager.show(
+                activity = activity,
+                screenKey = "in_app_screen",
+                adKey = "interstitial",
+                onLoading = { loadingAd = it }
+            ) {
+                proceedToDestination()
+            }
+        } else {
+            proceedToDestination()
+        }
+    }
+
+    BackHandler {
+        if (isTimerComplete) {
+            handleDismiss()
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(c.background)
     ) {
         Column(
-            Modifier
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 4.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+                .statusBarsPadding()
+                .navigationBarsPadding()
         ) {
-            Column(
-                Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
+            // Top Bar with right corner 3s circular timer & close cross
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                contentAlignment = Alignment.CenterEnd
             ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_crown_home),
-                    contentDescription = "Premium Crown",
-                    modifier = Modifier
-                        .width(if (isCompact) 56.dp else 68.dp)
-                        .height(if (isCompact) 36.dp else 44.dp)
-                )
-                Spacer(Modifier.height(if (isCompact) 4.dp else 8.dp))
-                Text(
-                    "Go Premium",
-                    color = Color(0xFF2979FF),
-                    fontSize = if (isCompact) 20.sp else 23.sp,
-                    fontWeight = FontWeight.Bold,
-                    letterSpacing = (-0.2).sp
-                )
-                Text(
-                    "Unlock All Feature",
-                    color = Color(0xFF616161),
-                    fontSize = if (isCompact) 11.sp else 12.sp,
-                    fontWeight = FontWeight.Medium
-                )
-            }
-
-            Column(Modifier.fillMaxWidth()) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp, vertical = if (isCompact) 2.dp else 4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(Modifier.weight(1f))
-                    Text(
-                        "PREMIUM",
-                        fontSize = if (isCompact) 9.sp else 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF757575),
-                        modifier = Modifier.width(if (isCompact) 52.dp else 58.dp),
-                        textAlign = TextAlign.Center
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Text(
-                        "BASIC",
-                        fontSize = if (isCompact) 9.sp else 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF757575),
-                        modifier = Modifier.width(if (isCompact) 44.dp else 48.dp),
-                        textAlign = TextAlign.Center
-                    )
-                }
-
-                val features = listOf(
-                    Triple(Icons.Filled.Mic, "Voice Lock Screen", Pair(true, true)),
-                    Triple(Icons.Filled.Lock, "Pin & Finger Lock options", Pair(true, true)),
-                    Triple(Icons.Filled.Style, "Unlimited Themes", Pair(true, true)),
-                    Triple(Icons.Filled.HeadsetMic, "VIP Customer Support", Pair(true, false)),
-                    Triple(Icons.AutoMirrored.Filled.VolumeOff, "Remove Ads", Pair(true, false))
-                )
-
-                features.forEach { (icon, title, status) ->
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = if (isCompact) 3.dp else 5.dp, horizontal = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                if (isTimerComplete) {
+                    Box(
+                        modifier = Modifier
+                            .size(34.dp)
+                            .clip(CircleShape)
+                            .background(if (isDark) Color(0xFF1E293B) else Color(0xFFE2E8F0))
+                            .clickable { handleDismiss() },
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            icon,
-                            contentDescription = null,
-                            tint = CrownGold,
-                            modifier = Modifier.size(if (isCompact) 16.dp else 18.dp)
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = "Close",
+                            tint = c.onBackground,
+                            modifier = Modifier.size(18.dp)
                         )
-                        Spacer(Modifier.width(10.dp))
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier.size(34.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            progress = { progressAnim },
+                            modifier = Modifier.size(34.dp),
+                            color = Blue,
+                            trackColor = if (isDark) Color(0xFF1E293B) else Color(0xFFE2E8F0),
+                            strokeWidth = 2.5.dp
+                        )
                         Text(
-                            title,
-                            fontSize = if (isCompact) 11.sp else 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = c.onSurface,
-                            modifier = Modifier.weight(1f)
+                            text = "$remainingSeconds",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = InterFontFamily,
+                            color = c.onBackground
                         )
-
-                        Box(Modifier.width(if (isCompact) 52.dp else 58.dp), Alignment.Center) {
-                            if (status.first) {
-                                Icon(
-                                    Icons.Filled.Check,
-                                    contentDescription = "Included in Premium",
-                                    tint = CrownGold,
-                                    modifier = Modifier.size(if (isCompact) 16.dp else 18.dp)
-                                )
-                            } else {
-                                Text("—", color = CrownGold, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            }
-                        }
-
-                        Spacer(Modifier.width(6.dp))
-
-                        Box(Modifier.width(if (isCompact) 44.dp else 48.dp), Alignment.Center) {
-                            if (status.second) {
-                                Icon(
-                                    Icons.Filled.Check,
-                                    contentDescription = "Included in Basic",
-                                    tint = CrownGold,
-                                    modifier = Modifier.size(if (isCompact) 16.dp else 18.dp)
-                                )
-                            } else {
-                                Text("—", color = CrownGold, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            }
-                        }
                     }
                 }
             }
 
-            Column(Modifier.fillMaxWidth()) {
-                plans.forEachIndexed { i, (n, p) ->
-                    val isSelected = plan == i
-                    Surface(
-                        onClick = { plan = i },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = if (isCompact) 5.dp else 8.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        color = if (isSelected) c.primaryContainer else c.surface,
-                        border = if (isSelected) BorderStroke(1.2.dp, c.primary) else BorderStroke(0.8.dp, c.outlineVariant.copy(alpha = 0.5f))
-                    ) {
+            // Scrollable Content
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Crown Illustration
+                Image(
+                    painter = painterResource(R.drawable.ic_premium),
+                    contentDescription = "Premium",
+                    modifier = Modifier.size(72.dp)
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                // Title & Subtitle
+                Text(
+                    text = "Go Premium",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = InterFontFamily,
+                    color = Blue
+                )
+
+                Spacer(Modifier.height(4.dp))
+
+                Text(
+                    text = "Unlock All Feature",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = InterFontFamily,
+                    color = c.onBackground
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                // Feature List with Stars (same as rating dialog)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    features.forEach { feature ->
                         Row(
-                            Modifier.padding(horizontal = 12.dp, vertical = if (isCompact) 7.dp else 10.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
                         ) {
-                            RadioButton(
-                                selected = isSelected,
-                                onClick = null,
+                            Image(
+                                painter = painterResource(R.drawable.ic_star),
+                                contentDescription = null,
                                 modifier = Modifier.size(20.dp)
                             )
-                            Spacer(Modifier.width(10.dp))
+                            Spacer(Modifier.width(12.dp))
                             Text(
-                                n,
-                                Modifier.weight(1f),
-                                fontSize = if (isCompact) 13.sp else 14.sp,
-                                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal
-                            )
-                            Text(
-                                p,
-                                fontSize = if (isCompact) 13.sp else 14.sp,
-                                fontWeight = FontWeight.SemiBold
+                                text = feature,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Medium,
+                                fontFamily = InterFontFamily,
+                                color = c.onSurface
                             )
                         }
                     }
+                }
+
+                Spacer(Modifier.height(28.dp))
+
+                // Plan Cards
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    plans.forEachIndexed { index, plan ->
+                        val isSelected = selectedPlanIndex == index
+                        val cardBg = if (isSelected) {
+                            if (isDark) Color(0xFF1D3A60) else Color(0xFFE2F0FD)
+                        } else {
+                            c.surface
+                        }
+                        val cardBorder = if (isSelected) {
+                            BorderStroke(1.5.dp, Blue)
+                        } else {
+                            BorderStroke(1.dp, c.outline)
+                        }
+
+                        Surface(
+                            onClick = { selectedPlanIndex = index },
+                            shape = RoundedCornerShape(16.dp),
+                            color = cardBg,
+                            border = cardBorder,
+                            shadowElevation = if (isSelected) 0.dp else 1.dp,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .heightIn(min = 68.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 18.dp, vertical = 22.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Radio circle
+                                Box(
+                                    modifier = Modifier
+                                        .size(20.dp)
+                                        .clip(CircleShape)
+                                        .background(if (isSelected) Blue else Color(0xFFD1D5DB))
+                                )
+
+                                Spacer(Modifier.width(14.dp))
+
+                                Text(
+                                    text = plan.title,
+                                    fontSize = 16.sp,
+                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                                    fontFamily = InterFontFamily,
+                                    color = c.onSurface,
+                                    modifier = Modifier.weight(1f)
+                                )
+
+                                Text(
+                                    text = plan.price,
+                                    fontSize = 16.sp,
+                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                                    fontFamily = InterFontFamily,
+                                    color = if (isDark) Color(0xFF8CC4FF) else Color(0xFF334155)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(24.dp))
+
+                // Action Button: Start 3 days free trial
+                Button(
+                    onClick = {
+                        ctx.toast("Connect Google Play Billing to enable purchases")
+                        proceedToDestination()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Blue),
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp)
+                ) {
+                    Text(
+                        text = "Start 3 days free trial",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = InterFontFamily,
+                        color = Color.White
+                    )
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                // Centered Footer Links: Privacy Policy & Cancel Subscription (Terms of use removed)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Privacy Policy",
+                        fontSize = 12.sp,
+                        color = Color(0xFF94A3B8),
+                        fontFamily = InterFontFamily,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.clickable {
+                            val i = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com/privacy"))
+                            runCatching { ctx.startActivity(i) }
+                        }
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = "•",
+                        fontSize = 12.sp,
+                        color = Color(0xFF94A3B8)
+                    )
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = "Cancel Subscription",
+                        fontSize = 12.sp,
+                        color = Color(0xFF94A3B8),
+                        fontFamily = InterFontFamily,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.clickable { handleDismiss() }
+                    )
                 }
             }
         }
+
+        AdLoadingDialog(isVisible = loadingAd)
     }
 }
 

@@ -8,11 +8,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.voicelocker.ads.AppOpenBlackOverlay
+import com.voicelocker.ads.BillingManager
+import com.voicelocker.ads.RemoteConfigManager
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.data.model.lockThemes
 import com.voicelocker.app.service.LockService
 import com.voicelocker.app.ui.components.SuccessDialog
 import com.voicelocker.app.ui.screens.home.MainScreen
+import com.voicelocker.app.ui.screens.language.LanguageScreen
 import com.voicelocker.app.ui.screens.lock.LockScreen
 import com.voicelocker.app.ui.screens.notes.NoteDetailScreen
 import com.voicelocker.app.ui.screens.notes.NoteEditorScreen
@@ -41,15 +45,40 @@ fun AppRoot() {
     NavHost(nav, startDestination = NavRoutes.SPLASH) {
         composable(NavRoutes.SPLASH) {
             SplashScreen {
-                nav.navigate(if (Store.onboarded) NavRoutes.MAIN else NavRoutes.ONBOARDING) {
-                    popUpTo(NavRoutes.SPLASH) { inclusive = true }
+                if (!Store.onboarded) {
+                    // Flow 1: splash -> language -> onb -> premium screen -> home
+                    nav.navigate(NavRoutes.LANGUAGE) {
+                        popUpTo(NavRoutes.SPLASH) { inclusive = true }
+                    }
+                } else {
+                    // Flow 2: splash -> inapp screen -> Home
+                    val isPremium = BillingManager.getInstance(ctx).isPremiumUser()
+                    val inAppEnabled = RemoteConfigManager.isInAppScreenEnabled()
+                    if (!isPremium && inAppEnabled) {
+                        nav.navigate(NavRoutes.premium("splash")) {
+                            popUpTo(NavRoutes.SPLASH) { inclusive = true }
+                        }
+                    } else {
+                        nav.navigate(NavRoutes.MAIN) {
+                            popUpTo(NavRoutes.SPLASH) { inclusive = true }
+                        }
+                    }
                 }
             }
         }
+        composable(NavRoutes.LANGUAGE) {
+            LanguageScreen(
+                onBack = null,
+                onConfirm = {
+                    nav.navigate(NavRoutes.ONBOARDING) {
+                        popUpTo(NavRoutes.LANGUAGE) { inclusive = true }
+                    }
+                }
+            )
+        }
         composable(NavRoutes.ONBOARDING) {
             OnboardingScreen {
-                Store.onboarded = true
-                nav.navigate(NavRoutes.MAIN) {
+                nav.navigate(NavRoutes.premium("onboarding")) {
                     popUpTo(NavRoutes.ONBOARDING) { inclusive = true }
                 }
             }
@@ -98,8 +127,13 @@ fun AppRoot() {
                 onBack = { nav.popBackStack() },
                 onApply = {
                     Store.themeIndex = i
-                    ctx.toast("${lockThemes[i].name} applied")
-                    nav.popBackStack()
+                    UiBus.success = "${lockThemes[i].name} applied successfully."
+                    val popped = nav.popBackStack(NavRoutes.MAIN, false)
+                    if (!popped) {
+                        nav.navigate(NavRoutes.MAIN) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
                 }
             )
         }
@@ -136,12 +170,28 @@ fun AppRoot() {
                 initialTab = it.arguments?.getInt("tab") ?: 0
             )
         }
-        composable(NavRoutes.PREMIUM) {
-            PremiumScreen(nav)
+        composable(
+            route = NavRoutes.PREMIUM,
+            arguments = listOf(
+                navArgument("from") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = "inapp"
+                }
+            )
+        ) { entry ->
+            val from = entry.arguments?.getString("from") ?: "inapp"
+            PremiumScreen(nav = nav, from = from)
         }
     }
     UiBus.success?.let {
-        SuccessDialog(it) { UiBus.success = null }
+        SuccessDialog(it) {
+            UiBus.success = null
+            val onDismiss = UiBus.onDismissSuccess
+            UiBus.onDismissSuccess = null
+            onDismiss?.invoke()
+        }
     }
+    AppOpenBlackOverlay()
 }
 

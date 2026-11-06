@@ -5,6 +5,7 @@ import com.voicelocker.app.data.local.Store
 
 object NavRoutes {
     const val SPLASH = "splash"
+    const val LANGUAGE = "language"
     const val ONBOARDING = "onboarding"
     const val MAIN = "main"
     const val VOICE_INTRO = "voiceIntro"
@@ -20,7 +21,9 @@ object NavRoutes {
     const val TEST_LOCK = "testLock"
     const val NOTE_EDIT = "noteEdit?id={id}"
     const val NOTE_DETAIL = "note/{id}?tab={tab}"
-    const val PREMIUM = "premium"
+    const val PREMIUM = "premium?from={from}"
+
+    fun premium(from: String = "inapp") = "premium?from=$from"
 }
 
 /**
@@ -46,13 +49,21 @@ fun NavHostController.go(flow: String, from: String) {
         return
     }
     if (flow == "voice") Store.voiceEnabled = true
-    popBackStack(if (flow == "voice") NavRoutes.VOICE_INTRO else NavRoutes.MAIN, false)
+    val popped = popBackStack(NavRoutes.MAIN, false)
+    if (!popped) {
+        navigate(NavRoutes.MAIN) {
+            popUpTo(0) { inclusive = true }
+        }
+    }
     UiBus.success = when (flow) {
         "voice" -> "Your Voice has been set successfully."
         "pin" -> "Your PIN has been set successfully."
         "pattern" -> "Your Pattern has been set successfully."
         "fp" -> "Your Fingerprint has been set successfully."
         else -> "Your security question has been saved."
+    }
+    UiBus.onDismissSuccess = {
+        navigate(NavRoutes.THEMES)
     }
 }
 

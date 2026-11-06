@@ -1,5 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:ns1="http://schemas.android.com/tools">
+    <color name="black">#FF000000</color>
+    <color name="primary">#1789F4</color>
+    <color name="white">#FFFFFFFF</color>
+    <dimen name="_12sdp">12dp</dimen>
+    <dimen name="_14sdp">14dp</dimen>
+    <dimen name="_20sdp">20dp</dimen>
+    <dimen name="_40sdp">40dp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="appbar_padding">16dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
+    <dimen name="button_radius_pill">50dp</dimen>
+    <dimen name="card_radius_lg">20dp</dimen>
+    <dimen name="card_radius_md">16dp</dimen>
+    <dimen name="card_radius_sm">12dp</dimen>
+    <dimen name="card_radius_xl">24dp</dimen>
+    <dimen name="elevation_high">8dp</dimen>
+    <dimen name="elevation_low">2dp</dimen>
+    <dimen name="elevation_md">4dp</dimen>
+    <dimen name="gnt_ad_indicator_bar_height">30dp</dimen>
+    <dimen name="gnt_ad_indicator_bottom_margin">10dp</dimen>
+    <dimen name="gnt_ad_indicator_height">20dp</dimen>
+    <dimen name="gnt_ad_indicator_text_size">10sp</dimen>
+    <dimen name="gnt_ad_indicator_top_margin">0dp</dimen>
+    <dimen name="gnt_ad_indicator_width">25dp</dimen>
+    <dimen name="gnt_default_margin">10dp</dimen>
+    <item format="float" name="gnt_media_view_weight" type="dimen">1.0</item>
+    <dimen name="gnt_medium_cta_button_height">50dp</dimen>
+    <item format="float" name="gnt_medium_template_bottom_weight" type="dimen">0.4</item>
+    <item format="float" name="gnt_medium_template_top_weight" type="dimen">0.2</item>
+    <dimen name="gnt_no_margin">0dp</dimen>
+    <dimen name="gnt_no_size">0dp</dimen>
+    <dimen name="gnt_small_cta_button_height">30dp</dimen>
+    <dimen name="gnt_small_margin">5dp</dimen>
+    <item format="float" name="gnt_text_row_weight" type="dimen">0.25</item>
+    <dimen name="gnt_text_size_large">15sp</dimen>
+    <dimen name="gnt_text_size_small">12sp</dimen>
+    <dimen name="spacing_lg">20dp</dimen>
+    <dimen name="spacing_md">16dp</dimen>
+    <dimen name="spacing_sm">12dp</dimen>
+    <dimen name="spacing_xl">24dp</dimen>
+    <dimen name="spacing_xs">8dp</dimen>
+    <dimen name="spacing_xxl">32dp</dimen>
+    <dimen name="spacing_xxs">4dp</dimen>
+    <dimen name="text_size_body">14sp</dimen>
+    <dimen name="text_size_hero">30sp</dimen>
+    <dimen name="text_size_lg">18sp</dimen>
+    <dimen name="text_size_md">16sp</dimen>
+    <dimen name="text_size_sm">13sp</dimen>
+    <dimen name="text_size_xl">22sp</dimen>
+    <dimen name="text_size_xs">11sp</dimen>
+    <dimen name="text_size_xxl">26sp</dimen>
+    <string name="ad_label">Ad</string>
     <string name="app_name">Voice Screen Locker</string>
     <string name="com.google.firebase.crashlytics.mapping_file_id" ns1:ignore="UnusedResources,TypographyDashes" translatable="false">00000000000000000000000000000000</string>
     <string name="gcm_defaultSenderId" translatable="false">978080974617</string>
@@ -7,6 +60,7 @@
     <string name="google_app_id" translatable="false">1:978080974617:android:697f0abc6a26e72e912788</string>
     <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBMeMfjkd3CudwdgEghPb7GwFZf3FjBB5g</string>
     <string name="google_storage_bucket" translatable="false">voice-lock-65f62.firebasestorage.app</string>
+    <string name="install">Install</string>
     <string name="project_id" translatable="false">voice-lock-65f62</string>
     <style name="Theme.VoiceLocker" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/white</item>

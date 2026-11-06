@@ -33,12 +33,17 @@ object Store {
             when (v) {
                 is Boolean -> putBoolean(k, v)
                 is Int -> putInt(k, v)
+                is Long -> putLong(k, v)
                 is String -> putString(k, v)
                 null -> remove(k)
             }
         }.apply()
         rev++
     }
+
+    var lastResumeAdTime: Long
+        get() = r { p.getLong("last_resume_ad", 0L) }
+        set(v) = put("last_resume_ad", v)
 
     var onboarded: Boolean
         get() = r { p.getBoolean("ob", false) }
@@ -63,6 +68,24 @@ object Store {
     var themeIndex: Int
         get() = r { p.getInt("theme", 0) }
         set(v) = put("theme", v)
+
+    fun unlockTheme(index: Int, durationHours: Int) {
+        val expiry = System.currentTimeMillis() + (durationHours.toLong() * 3600L * 1000L)
+        put("theme_unlock_$index", expiry)
+    }
+
+    fun isThemeUnlocked(index: Int, isPremium: Boolean = false): Boolean = r {
+        if (isPremium) return@r true
+        if (index < 3) return@r true // First three themes are always free
+        val expiry = p.getLong("theme_unlock_$index", 0L)
+        expiry > System.currentTimeMillis()
+    }
+
+    fun getThemeRemainingHours(index: Int): Int = r {
+        val expiry = p.getLong("theme_unlock_$index", 0L)
+        val remainingMs = expiry - System.currentTimeMillis()
+        if (remainingMs <= 0) 0 else ((remainingMs / (3600L * 1000L)) + 1).toInt()
+    }
 
     /** 0 = follow system, 1 = light, 2 = dark */
     var themeMode: Int

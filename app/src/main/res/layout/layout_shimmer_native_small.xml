@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/shimmerNativeSmall"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:shimmer_auto_start="true"
+    app:shimmer_base_alpha="0.6"
+    app:shimmer_duration="1200"
+    app:shimmer_highlight_alpha="0.9">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_native_ad_border"
+        android:padding="6dp">
+
+        <View
+            android:id="@+id/shimmerMedia"
+            android:layout_width="140dp"
+            android:layout_height="120dp"
+            android:background="#D1D5DB"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="@id/shimmerMedia"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/shimmerMedia"
+            app:layout_constraintTop_toTopOf="@id/shimmerMedia">
+
+            <View
+                android:layout_width="120dp"
+                android:layout_height="14dp"
+                android:background="#D1D5DB" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_marginTop="8dp"
+                android:background="#E5E7EB" />
+
+            <View
+                android:layout_width="80dp"
+                android:layout_height="10dp"
+                android:layout_marginTop="6dp"
+                android:background="#E5E7EB" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginTop="8dp"
+                android:background="#CBD5E1" />
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.facebook.shimmer.ShimmerFrameLayout>

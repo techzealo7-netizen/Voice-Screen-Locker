@@ -3,9 +3,15 @@ package com.voicelocker.app.data.model
 data class Lang(val name: String, val flag: String, val tag: String)
 
 val languages = listOf(
-    // Popular & Major International
+    // Featured top languages
+    Lang("Arabic", "🇦🇪", "ar-AE"),
+    Lang("Turkish", "🇹🇷", "tr-TR"),
+    Lang("English", "🇬🇧", "en-GB"),
+    Lang("Korean", "🇰🇷", "ko-KR"),
+    Lang("Dutch", "🇳🇱", "nl-NL"),
+    Lang("Hindi", "🇮🇳", "hi-IN"),
+    Lang("Japanese", "🇯🇵", "ja-JP"),
     Lang("English (US)", "🇺🇸", "en-US"),
-    Lang("English (UK)", "🇬🇧", "en-GB"),
     Lang("English (India)", "🇮🇳", "en-IN"),
     Lang("English (Australia)", "🇦🇺", "en-AU"),
     Lang("English (Canada)", "🇨🇦", "en-CA"),
@@ -26,15 +32,11 @@ val languages = listOf(
     Lang("Chinese (Simplified, Mandarin)", "🇨🇳", "zh-CN"),
     Lang("Chinese (Traditional, Taiwan)", "🇹🇼", "zh-TW"),
     Lang("Chinese (Cantonese, Hong Kong)", "🇭🇰", "zh-HK"),
-    Lang("Japanese", "🇯🇵", "ja-JP"),
-    Lang("Korean", "🇰🇷", "ko-KR"),
     Lang("Arabic (Saudi Arabia)", "🇸🇦", "ar-SA"),
-    Lang("Arabic (UAE)", "🇦🇪", "ar-AE"),
     Lang("Arabic (Egypt)", "🇪🇬", "ar-EG"),
     Lang("Arabic (Algeria)", "🇩🇿", "ar-DZ"),
     Lang("Arabic (Iraq)", "🇮🇶", "ar-IQ"),
     Lang("Arabic (Morocco)", "🇲🇦", "ar-MA"),
-    Lang("Hindi", "🇮🇳", "hi-IN"),
     Lang("Urdu (Pakistan)", "🇵🇰", "ur-PK"),
     Lang("Urdu (India)", "🇮🇳", "ur-IN"),
     Lang("Bengali (India)", "🇮🇳", "bn-IN"),
@@ -47,13 +49,11 @@ val languages = listOf(
     Lang("Gujarati", "🇮🇳", "gu-IN"),
     Lang("Kannada", "🇮🇳", "kn-IN"),
     Lang("Malayalam", "🇮🇳", "ml-IN"),
-    Lang("Turkish", "🇹🇷", "tr-TR"),
     Lang("Vietnamese", "🇻🇳", "vi-VN"),
     Lang("Thai", "🇹🇭", "th-TH"),
     Lang("Indonesian", "🇮🇩", "id-ID"),
     Lang("Malay", "🇲🇾", "ms-MY"),
     Lang("Filipino / Tagalog", "🇵🇭", "fil-PH"),
-    Lang("Dutch (Netherlands)", "🇳🇱", "nl-NL"),
     Lang("Dutch (Belgium)", "🇧🇪", "nl-BE"),
     Lang("Polish", "🇵🇱", "pl-PL"),
     Lang("Ukrainian", "🇺🇦", "uk-UA"),
@@ -119,6 +119,7 @@ val languages = listOf(
 )
 
 fun langByName(n: String): Lang =
-    languages.firstOrNull { it.name.equals(n, ignoreCase = true) || it.name.startsWith(n, ignoreCase = true) }
+    languages.firstOrNull { it.name.equals(n, ignoreCase = true) }
+        ?: languages.firstOrNull { it.name.startsWith(n, ignoreCase = true) || n.startsWith(it.name, ignoreCase = true) }
         ?: languages.first()
 
