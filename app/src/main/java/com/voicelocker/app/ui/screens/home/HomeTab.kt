@@ -1,6 +1,7 @@
 package com.voicelocker.app.ui.screens.home
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -88,6 +89,7 @@ fun HomeTab(nav: NavHostController) {
             adKey
         }
 
+        Log.d("ADSMANAGER", "[home_screen][$effectiveAdKey] Interstitial show triggered (clickCount=$clickCount, isNth=$isNth)")
         if (activity != null) {
             InterstitialAdManager.show(
                 activity = activity,
@@ -95,6 +97,7 @@ fun HomeTab(nav: NavHostController) {
                 adKey = effectiveAdKey,
                 onLoading = { loadingAd = it }
             ) {
+                Log.d("ADSMANAGER", "[home_screen][$effectiveAdKey] Interstitial flow completed -> navigating")
                 onNavigate()
             }
         } else {

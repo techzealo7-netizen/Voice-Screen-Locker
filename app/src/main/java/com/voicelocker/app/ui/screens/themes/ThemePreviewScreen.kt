@@ -1,6 +1,7 @@
 package com.voicelocker.app.ui.screens.themes
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -42,6 +43,10 @@ fun ThemePreviewScreen(nav: NavHostController, i: Int) {
     val isUnlocked = Store.isThemeUnlocked(i, isPremium)
     var showUnlockDialog by remember { mutableStateOf(false) }
     var showSuccessDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        InterstitialAdManager.preload("theme_screen", "inter_apply")
+    }
 
     val navigateToHome: () -> Unit = {
         val popped = nav.popBackStack(NavRoutes.MAIN, false)
@@ -102,9 +107,15 @@ fun ThemePreviewScreen(nav: NavHostController, i: Int) {
                         if (!isUnlocked) {
                             showUnlockDialog = true
                         } else {
-                            val interIds = AdManager.getInterstitialIds("theme_screen", "inter_apply")
-                            if (act != null && interIds.isNotEmpty()) {
-                                InterstitialAdManager.show(act, interIds, onLoading = { loadingAd = it }) {
+                            Log.d("ADSMANAGER", "[theme_screen][inter_apply] Interstitial show triggered on Apply click")
+                            if (act != null) {
+                                InterstitialAdManager.show(
+                                    activity = act,
+                                    screenKey = "theme_screen",
+                                    adKey = "inter_apply",
+                                    onLoading = { loadingAd = it }
+                                ) {
+                                    Log.d("ADSMANAGER", "[theme_screen][inter_apply] Interstitial flow completed -> applying theme")
                                     applyThemeAndShowSuccess()
                                 }
                             } else {

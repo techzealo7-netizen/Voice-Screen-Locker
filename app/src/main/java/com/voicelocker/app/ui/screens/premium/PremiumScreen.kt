@@ -3,6 +3,7 @@ package com.voicelocker.app.ui.screens.premium
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -108,6 +109,7 @@ fun PremiumScreen(
     }
 
     val handleDismiss: () -> Unit = {
+        Log.d("ADSMANAGER", "[in_app_screen][interstitial] Interstitial show triggered on paywall dismiss")
         if (activity != null) {
             InterstitialAdManager.show(
                 activity = activity,
@@ -115,6 +117,7 @@ fun PremiumScreen(
                 adKey = "interstitial",
                 onLoading = { loadingAd = it }
             ) {
+                Log.d("ADSMANAGER", "[in_app_screen][interstitial] Interstitial flow completed -> proceeding to destination")
                 proceedToDestination()
             }
         } else {
@@ -360,7 +363,7 @@ fun PremiumScreen(
                         fontFamily = InterFontFamily,
                         textAlign = TextAlign.Center,
                         modifier = Modifier.clickable {
-                            val i = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com/privacy"))
+                            val i = Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/voicelockscren/home"))
                             runCatching { ctx.startActivity(i) }
                         }
                     )

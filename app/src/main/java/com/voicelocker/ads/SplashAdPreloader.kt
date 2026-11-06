@@ -22,6 +22,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 
 object SplashAdPreloader {
     private const val TAG = "SplashAdPreloader"
+    private const val AD_TAG = "ADSMANAGER"
 
     private var loadedInterstitial: InterstitialAd? = null
     private var loadedAppOpen: AppOpenAd? = null
@@ -165,12 +166,14 @@ object SplashAdPreloader {
         onFinished: (Boolean) -> Unit
     ) {
         if (index >= ids.size) {
+            Log.e(AD_TAG, "[splash][interstitial] All waterfall IDs exhausted, failed to load ad")
             Log.d(TAG, "❌ All splash interstitial waterfall IDs exhausted")
             mainHandler.post { onFinished(false) }
             return
         }
 
         val adUnitId = ids[index]
+        Log.d(AD_TAG, "[splash][interstitial] Interstitial ad request sent: adUnitId=$adUnitId, index=$index")
         Log.d(TAG, "📡 [Splash:Interstitial] Request sent: adUnitId=$adUnitId, priority=$index")
 
         val request = AdRequest.Builder(adUnitId).build()
@@ -178,12 +181,14 @@ object SplashAdPreloader {
             request,
             object : AdLoadCallback<InterstitialAd> {
                 override fun onAdLoaded(ad: InterstitialAd) {
+                    Log.d(AD_TAG, "[splash][interstitial] Interstitial ad loaded: adUnitId=$adUnitId")
                     Log.d(TAG, "✅ [Splash:Interstitial] Ad loaded successfully: adUnitId=$adUnitId, priority=$index")
                     loadedInterstitial = ad
                     mainHandler.post { onFinished(true) }
                 }
 
                 override fun onAdFailedToLoad(error: LoadAdError) {
+                    Log.e(AD_TAG, "[splash][interstitial] Interstitial ad failed to load: code=${error.code}, message='${error.message}', adUnitId=$adUnitId")
                     Log.w(TAG, "❌ [Splash:Interstitial] Failed to load: adUnitId=$adUnitId, priority=$index, code=${error.code}, message='${error.message}'")
                     preloadInterstitialWaterfall(ids, index + 1, onFinished)
                 }
@@ -336,15 +341,18 @@ object SplashAdPreloader {
 
         ad.adEventCallback = object : InterstitialAdEventCallback {
             override fun onAdShowedFullScreenContent() {
+                Log.d(AD_TAG, "[splash][interstitial] Interstitial ad show success")
                 Log.d(TAG, "🎉 [Splash:Interstitial] Show success (fullscreen displayed)")
             }
 
             override fun onAdDismissedFullScreenContent() {
+                Log.d(AD_TAG, "[splash][interstitial] Interstitial ad dismissed")
                 Log.d(TAG, "👋 [Splash:Interstitial] Ad dismissed")
                 cleanupAndFinish(onComplete)
             }
 
             override fun onAdFailedToShowFullScreenContent(error: FullScreenContentError) {
+                Log.e(AD_TAG, "[splash][interstitial] Interstitial ad failed to show: code=${error.code}, message='${error.message}'")
                 Log.e(TAG, "❌ [Splash:Interstitial] Failed to show: code=${error.code}, message='${error.message}'")
                 if (!isFallback) {
                     Log.w(TAG, "🔄 [Splash:Interstitial] Falling back to App Open...")
@@ -355,6 +363,7 @@ object SplashAdPreloader {
             }
         }
 
+        Log.d(AD_TAG, "[splash][interstitial] Interstitial ad show requested: activity=${activity.localClassName}")
         Log.d(TAG, "▶️ [Splash:Interstitial] Show requested: activity=${activity.localClassName}")
         ad.show(activity)
     }
@@ -411,15 +420,18 @@ object SplashAdPreloader {
         val interIds = AdManager.getRawInterstitialIds("splash", "interstitial")
         if (interIds.isNotEmpty() && !activity.isFinishing && !activity.isDestroyed) {
             val adUnitId = interIds.first()
+            Log.d(AD_TAG, "[splash][interstitial] Interstitial ad request sent (fallback): adUnitId=$adUnitId")
             val request = AdRequest.Builder(adUnitId).build()
             InterstitialAd.load(
                 request,
                 object : AdLoadCallback<InterstitialAd> {
                     override fun onAdLoaded(loadedAd: InterstitialAd) {
+                        Log.d(AD_TAG, "[splash][interstitial] Interstitial ad loaded (fallback): adUnitId=$adUnitId")
                         showInterstitial(activity, loadedAd, isFallback = true, onComplete = onComplete)
                     }
 
                     override fun onAdFailedToLoad(error: LoadAdError) {
+                        Log.e(AD_TAG, "[splash][interstitial] Interstitial ad failed to load (fallback): code=${error.code}, message='${error.message}'")
                         Log.w(TAG, "❌ [Splash:InterstitialFallback] Failed to load on-demand: code=${error.code}, message='${error.message}'")
                         cleanupAndFinish(onComplete)
                     }

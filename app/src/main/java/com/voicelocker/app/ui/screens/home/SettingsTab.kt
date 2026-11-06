@@ -282,7 +282,7 @@ fun SettingsTab(nav: NavHostController, onBack: (() -> Unit)? = null) {
                     title = "Privacy Policies",
                     sub = "Read our privacy policy",
                     onClick = {
-                        open(Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com/privacy")))
+                        open(Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/voicelockscren/home")))
                     }
                 )
                 SettingItem(

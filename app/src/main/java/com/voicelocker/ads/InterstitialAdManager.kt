@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
 
 object InterstitialAdManager {
-    private const val TAG = "InterstitialAdManager"
+    private const val TAG = "ADSMANAGER"
 
     @Volatile
     private var isShowing = false
@@ -56,35 +56,36 @@ object InterstitialAdManager {
      */
     fun preload(screenKey: String, adKey: String = "interstitial") {
         if (!AdManager.isInterstitialEnabled(screenKey, adKey)) {
-            Log.d(TAG, "ℹ️ [Preload] Interstitial disabled for [$screenKey][$adKey] — skipping request")
+            Log.d(TAG, "[$screenKey][$adKey] Interstitial disabled in config — skipping preload")
             return
         }
 
         val key = cacheKey(screenKey, adKey)
         if (hasPreloadedAd(screenKey, adKey)) {
-            Log.d(TAG, "🔄 [Preload] Interstitial already preloaded and ready for [$key]")
+            Log.d(TAG, "[$screenKey][$adKey] Interstitial already preloaded and ready")
             return
         }
 
         if (isPreloading(screenKey, adKey)) {
-            Log.d(TAG, "🔄 [Preload] Interstitial preload already in flight for [$key]")
+            Log.d(TAG, "[$screenKey][$adKey] Interstitial preload already in flight")
             return
         }
 
         val adUnitIds = AdManager.getInterstitialIds(screenKey, adKey)
         if (adUnitIds.isEmpty()) {
-            Log.d(TAG, "⚠️ [Preload] No valid interstitial IDs for [$screenKey][$adKey] — skipping request")
+            Log.w(TAG, "[$screenKey][$adKey] No valid interstitial IDs found — skipping preload")
             return
         }
 
         isPreloadingMap[key] = true
-        Log.d(TAG, "🚀 [Preload] Starting launch preload for [$key] (${adUnitIds.size} IDs)")
+        Log.d(TAG, "[$screenKey][$adKey] Starting preload (${adUnitIds.size} waterfall IDs)")
 
         CoroutineScope(Dispatchers.Main).launch {
             AdsInitializer.awaitReady()
             loadWaterfallForPreload(
                 cacheKey = key,
                 screenKey = screenKey,
+                adKey = adKey,
                 adUnitIds = adUnitIds,
                 index = 0
             )
@@ -94,24 +95,25 @@ object InterstitialAdManager {
     private fun loadWaterfallForPreload(
         cacheKey: String,
         screenKey: String,
+        adKey: String,
         adUnitIds: List<String>,
         index: Int
     ) {
         if (index >= adUnitIds.size) {
-            Log.d(TAG, "❌ [Preload] All waterfall IDs exhausted for [$cacheKey]")
+            Log.e(TAG, "[$screenKey][$adKey] All waterfall IDs exhausted, failed to load ad")
             isPreloadingMap[cacheKey] = false
             return
         }
 
         val adUnitId = adUnitIds[index]
-        Log.d(TAG, "📡 [Interstitial:Preload] Request sent: cacheKey=$cacheKey, adUnitId=$adUnitId, priority=$index")
+        Log.d(TAG, "[$screenKey][$adKey] Interstitial ad request sent: adUnitId=$adUnitId, index=$index")
 
         val request = AdRequest.Builder(adUnitId).build()
         InterstitialAd.load(
             request,
             object : AdLoadCallback<InterstitialAd> {
                 override fun onAdLoaded(ad: InterstitialAd) {
-                    Log.d(TAG, "✅ [Interstitial:Preload] Ad preloaded fresh for [$cacheKey]: adUnitId=$adUnitId")
+                    Log.d(TAG, "[$screenKey][$adKey] Interstitial ad loaded: adUnitId=$adUnitId")
                     preloadedAds[cacheKey] = ad
                     if (cacheKey.endsWith(":interstitial")) {
                         preloadedAds[screenKey] = ad
@@ -120,8 +122,8 @@ object InterstitialAdManager {
                 }
 
                 override fun onAdFailedToLoad(error: LoadAdError) {
-                    Log.w(TAG, "❌ [Interstitial:Preload] Failed to load for [$cacheKey]: adUnitId=$adUnitId, code=${error.code}, message='${error.message}'")
-                    loadWaterfallForPreload(cacheKey, screenKey, adUnitIds, index + 1)
+                    Log.e(TAG, "[$screenKey][$adKey] Interstitial ad failed to load: code=${error.code}, message='${error.message}', adUnitId=$adUnitId")
+                    loadWaterfallForPreload(cacheKey, screenKey, adKey, adUnitIds, index + 1)
                 }
             }
         )
@@ -140,19 +142,19 @@ object InterstitialAdManager {
         onComplete: () -> Unit
     ) {
         if (!AdManager.isInterstitialEnabled(screenKey, adKey)) {
-            Log.d(TAG, "ℹ️ Interstitial disabled for [$screenKey][$adKey] — skipping show")
+            Log.d(TAG, "[$screenKey][$adKey] Interstitial disabled in config — skipping show")
             onComplete()
             return
         }
 
         if (BillingManager.getInstance(activity).isPremiumUser()) {
-            Log.d(TAG, "👑 Premium user — skipping interstitial")
+            Log.d(TAG, "[$screenKey][$adKey] Premium user — skipping interstitial show")
             onComplete()
             return
         }
 
         if (isShowing) {
-            Log.w(TAG, "⚠️ Already showing an ad — skipping")
+            Log.w(TAG, "[$screenKey][$adKey] Already showing an ad — skipping show")
             onComplete()
             return
         }
@@ -160,8 +162,8 @@ object InterstitialAdManager {
         // Case 1: Fresh preloaded ad is ready
         val cachedAd = getAndRemovePreloadedAd(screenKey, adKey)
         if (cachedAd != null) {
-            Log.d(TAG, "⚡ Showing fresh preloaded interstitial for [$screenKey][$adKey]")
-            showLoadedAd(activity, cachedAd) {
+            Log.d(TAG, "[$screenKey][$adKey] Showing preloaded interstitial ad")
+            showLoadedAd(activity, cachedAd, screenKey, adKey) {
                 preload(screenKey, adKey)
                 onComplete()
             }
@@ -170,7 +172,7 @@ object InterstitialAdManager {
 
         // Case 2: Preload is currently in flight — wait briefly for it
         if (isPreloading(screenKey, adKey)) {
-            Log.d(TAG, "⏳ Preload in flight for [$screenKey][$adKey] — waiting briefly with loading dialog...")
+            Log.d(TAG, "[$screenKey][$adKey] Preload in flight — waiting briefly with loading dialog...")
             mainHandler.post { onLoading(true) }
 
             CoroutineScope(Dispatchers.Main).launch {
@@ -182,13 +184,13 @@ object InterstitialAdManager {
 
                 val readyAd = getAndRemovePreloadedAd(screenKey, adKey)
                 if (readyAd != null) {
-                    Log.d(TAG, "⚡ Preload finished just in time — showing for [$screenKey][$adKey]")
-                    showLoadedAd(activity, readyAd) {
+                    Log.d(TAG, "[$screenKey][$adKey] Preload finished just in time — showing interstitial")
+                    showLoadedAd(activity, readyAd, screenKey, adKey) {
                         preload(screenKey, adKey)
                         onComplete()
                     }
                 } else {
-                    Log.d(TAG, "⚠️ Preload timed out or failed for [$screenKey][$adKey] — proceeding")
+                    Log.w(TAG, "[$screenKey][$adKey] Preload timed out or failed to load — proceeding without ad")
                     onComplete()
                 }
             }
@@ -196,7 +198,7 @@ object InterstitialAdManager {
         }
 
         // Case 3: No preloaded ad and not preloading — proceed immediately (no slow runtime load)
-        Log.d(TAG, "ℹ️ No preloaded ad for [$screenKey][$adKey] — proceeding immediately without runtime delay")
+        Log.d(TAG, "[$screenKey][$adKey] No preloaded ad available — proceeding immediately")
         preload(screenKey, adKey)
         onComplete()
     }
@@ -205,24 +207,32 @@ object InterstitialAdManager {
     fun show(
         activity: Activity,
         adUnitIds: List<String>,
-        onLoading: (Boolean) -> Unit,
+        screenKey: String = "theme_screen",
+        adKey: String = "inter_apply",
+        onLoading: (Boolean) -> Unit = {},
         onComplete: () -> Unit
     ) {
         if (adUnitIds.isEmpty()) {
-            Log.d(TAG, "⚠️ No interstitial IDs — skipping ad")
+            Log.w(TAG, "[$screenKey][$adKey] No interstitial IDs provided — skipping show")
+            onComplete()
+            return
+        }
+
+        if (BillingManager.getInstance(activity).isPremiumUser()) {
+            Log.d(TAG, "[$screenKey][$adKey] Premium user — skipping interstitial show")
             onComplete()
             return
         }
 
         if (isShowing) {
-            Log.d(TAG, "⚠️ Already showing")
+            Log.w(TAG, "[$screenKey][$adKey] Already showing an ad — skipping show")
             onComplete()
             return
         }
 
         mainHandler.post {
             onLoading(true)
-            Log.d(TAG, "🔄 Showing loading dialog")
+            Log.d(TAG, "[$screenKey][$adKey] Showing loading dialog for runtime load")
         }
 
         // ✅ Wait for SDK readiness before touching InterstitialAd.load(...)
@@ -232,6 +242,8 @@ object InterstitialAdManager {
                 activity   = activity,
                 adUnitIds  = adUnitIds,
                 index      = 0,
+                screenKey  = screenKey,
+                adKey      = adKey,
                 onLoading  = onLoading,
                 onComplete = onComplete
             )
@@ -242,11 +254,13 @@ object InterstitialAdManager {
         activity: Activity,
         adUnitIds: List<String>,
         index: Int,
+        screenKey: String,
+        adKey: String,
         onLoading: (Boolean) -> Unit,
         onComplete: () -> Unit
     ) {
         if (index >= adUnitIds.size) {
-            Log.d(TAG, "❌ All waterfall IDs exhausted")
+            Log.e(TAG, "[$screenKey][$adKey] All waterfall IDs exhausted, failed to load ad")
             mainHandler.post {
                 onLoading(false)
                 onComplete()
@@ -255,7 +269,7 @@ object InterstitialAdManager {
         }
 
         val adUnitId = adUnitIds[index]
-        Log.d(TAG, "📡 [Interstitial] Request sent: adUnitId=$adUnitId, priority=$index")
+        Log.d(TAG, "[$screenKey][$adKey] Interstitial ad request sent: adUnitId=$adUnitId, index=$index")
 
         val request = AdRequest.Builder(adUnitId).build()
 
@@ -264,18 +278,18 @@ object InterstitialAdManager {
             object : AdLoadCallback<InterstitialAd> {
 
                 override fun onAdLoaded(ad: InterstitialAd) {
-                    Log.d(TAG, "✅ [Interstitial] Ad loaded successfully: adUnitId=$adUnitId, priority=$index")
+                    Log.d(TAG, "[$screenKey][$adKey] Interstitial ad loaded: adUnitId=$adUnitId")
                     mainHandler.post {
                         onLoading(false)
                         mainHandler.postDelayed({
-                            showLoadedAd(activity, ad, onComplete)
+                            showLoadedAd(activity, ad, screenKey, adKey, onComplete)
                         }, 300L)
                     }
                 }
 
                 override fun onAdFailedToLoad(error: LoadAdError) {
-                    Log.e(TAG, "❌ [Interstitial] Failed to load: adUnitId=$adUnitId, priority=$index, code=${error.code}, message='${error.message}'")
-                    loadFromWaterfall(activity, adUnitIds, index + 1, onLoading, onComplete)
+                    Log.e(TAG, "[$screenKey][$adKey] Interstitial ad failed to load: code=${error.code}, message='${error.message}', adUnitId=$adUnitId")
+                    loadFromWaterfall(activity, adUnitIds, index + 1, screenKey, adKey, onLoading, onComplete)
                 }
             }
         )
@@ -284,10 +298,12 @@ object InterstitialAdManager {
     private fun showLoadedAd(
         activity: Activity,
         ad: InterstitialAd,
+        screenKey: String,
+        adKey: String,
         onComplete: () -> Unit
     ) {
         if (isShowing) {
-            Log.w(TAG, "⚠️ [Interstitial] Already showing — skipping show")
+            Log.w(TAG, "[$screenKey][$adKey] Interstitial ad failed to show: already showing an ad")
             onComplete()
             return
         }
@@ -296,11 +312,11 @@ object InterstitialAdManager {
         AdActivityGuard.beginShowingAd()
         ad.adEventCallback = object : InterstitialAdEventCallback {
             override fun onAdShowedFullScreenContent() {
-                Log.d(TAG, "🎉 [Interstitial] Show success (fullscreen displayed)")
+                Log.d(TAG, "[$screenKey][$adKey] Interstitial ad show success")
             }
 
             override fun onAdDismissedFullScreenContent() {
-                Log.d(TAG, "👋 [Interstitial] Ad dismissed")
+                Log.d(TAG, "[$screenKey][$adKey] Interstitial ad dismissed")
                 isShowing = false
                 AdActivityGuard.endShowingAd()
                 mainHandler.post { onComplete() }
@@ -309,26 +325,26 @@ object InterstitialAdManager {
             override fun onAdFailedToShowFullScreenContent(
                 error: com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError
             ) {
-                Log.e(TAG, "❌ [Interstitial] Failed to show: code=${error.code}, message='${error.message}'")
+                Log.e(TAG, "[$screenKey][$adKey] Interstitial ad failed to show: code=${error.code}, message='${error.message}'")
                 isShowing = false
                 AdActivityGuard.endShowingAd()
                 mainHandler.post { onComplete() }
             }
 
             override fun onAdClicked() {
-                Log.d(TAG, "👆 [Interstitial] Ad clicked")
+                Log.d(TAG, "[$screenKey][$adKey] Interstitial ad clicked")
             }
 
             override fun onAdImpression() {
-                Log.d(TAG, "👁️ [Interstitial] Show impression recorded")
+                Log.d(TAG, "[$screenKey][$adKey] Interstitial ad impression recorded")
             }
 
             override fun onAdPaid(value: com.google.android.libraries.ads.mobile.sdk.common.AdValue) {
-                Log.d(TAG, "💰 [Interstitial] Ad paid: ${value.valueMicros} ${value.currencyCode}")
+                Log.d(TAG, "[$screenKey][$adKey] Interstitial ad paid: ${value.valueMicros} ${value.currencyCode}")
             }
         }
 
-        Log.d(TAG, "▶️ [Interstitial] Show requested: activity=${activity.localClassName}")
+        Log.d(TAG, "[$screenKey][$adKey] Interstitial ad show requested: activity=${activity.localClassName}")
         ad.show(activity)
     }
 }

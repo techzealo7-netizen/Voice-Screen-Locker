@@ -1,6 +1,7 @@
 package com.voicelocker.app.ui.screens.onboarding
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -204,6 +205,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                     onClick = {
                         if (pager.currentPage == pages.size - 1) {
                             val act = context as? Activity
+                            Log.d("ADSMANAGER", "[onboarding_screen][interstitial] Interstitial show triggered on Let's Start click")
                             if (act != null) {
                                 InterstitialAdManager.show(
                                     activity = act,
@@ -211,6 +213,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                                     adKey = "interstitial",
                                     onLoading = { loadingAd = it }
                                 ) {
+                                    Log.d("ADSMANAGER", "[onboarding_screen][interstitial] Interstitial flow completed -> finishing onboarding")
                                     onFinish()
                                 }
                             } else {
