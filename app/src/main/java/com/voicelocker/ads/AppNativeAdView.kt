@@ -36,10 +36,14 @@ fun AppNativeAdView(
     modifier: Modifier = Modifier,
     template: Int? = null,
     isCenter: Boolean = false,
-    isBottom: Boolean = false
+    isBottom: Boolean = false,
+    fallbackInline: Boolean? = null,
+    forceDarkMode: Boolean? = null
 ) {
     val context = LocalContext.current
-    val isDark by ThemeManager.isDarkMode.collectAsStateWithLifecycle()
+    val effectiveForceDark = forceDarkMode ?: if (screenKey == "language_screen") false else null
+    val isDarkState by ThemeManager.isDarkMode.collectAsStateWithLifecycle()
+    val isDark = effectiveForceDark ?: isDarkState
     val billingManager = remember { BillingManager.getInstance(context) }
     val isPremium by billingManager.isPremium.collectAsState()
     if (isPremium) return
@@ -70,11 +74,18 @@ fun AppNativeAdView(
         template ?: AdManager.getNativeTemplate(screenKey)
     }
 
+    val isInlineFallback = remember(screenKey, templateType, fallbackInline) {
+        fallbackInline ?: when (screenKey) {
+            "set_pin_lock_screen", "set_pattern_lock_screen", "theme_screen" -> false
+            "voice_lock_screen", "voice_record_screen", "onboarding_screen", "language_screen", "splash" -> true
+            else -> templateType > 1
+        }
+    }
+
     var displayState by remember(screenKey, isNativeEnabled, isBannerEnabled, adUnitId, templateType, configVersion) {
         mutableStateOf(
             if (isNativeEnabled && !adUnitId.isNullOrBlank()) AdDisplayState.LOADING_NATIVE
-            else if (isBannerEnabled) AdDisplayState.FALLBACK_BANNER
-            else AdDisplayState.HIDDEN
+            else AdDisplayState.FALLBACK_BANNER
         )
     }
 
@@ -132,6 +143,7 @@ fun AppNativeAdView(
                                 template = templateType,
                                 container = adContainer,
                                 shimmerContainer = shimmerLayout,
+                                forceDark = effectiveForceDark,
                                 listener = object : NativeAdsManager.NativeShowListener {
                                     override fun onLoaded() {
                                         android.util.Log.d("AppNativeAdView", "🎉 [NativeAdView][$screenKey] Native ad show success (template=$templateType)")
@@ -139,12 +151,10 @@ fun AppNativeAdView(
                                     }
 
                                     override fun onFailed() {
-                                        android.util.Log.e("AppNativeAdView", "❌ [NativeAdView][$screenKey] Native ad failed to load (template=$templateType) — falling back to ${if (templateType == 1) "adaptive banner" else "inline banner"} (isBannerEnabled=$isBannerEnabled)")
-                                        if (isBannerEnabled) {
-                                            displayState = AdDisplayState.FALLBACK_BANNER
-                                        } else {
-                                            displayState = AdDisplayState.HIDDEN
-                                        }
+                                        val bannerType = if (isInlineFallback) "inline banner" else "small adaptive banner"
+                                        android.util.Log.e("AppNativeAdView", "❌ [NativeAdView][$screenKey] Native ad failed to load (template=$templateType) — falling back to $bannerType")
+                                        android.util.Log.d("ADSMANAGER", "[$screenKey][native] Native ad failed to load -> showing $bannerType as fallback")
+                                        displayState = AdDisplayState.FALLBACK_BANNER
                                     }
                                 }
                             )
@@ -152,7 +162,7 @@ fun AppNativeAdView(
                             root
                         },
                         update = { root ->
-                            val currentDark = ThemeManager.isDark(root.context)
+                            val currentDark = effectiveForceDark ?: ThemeManager.isDark(root.context)
                             val shimmerLayout = root.getChildAt(0) as? ViewGroup
                             val adContainer = root.getChildAt(1) as? ViewGroup
 
@@ -164,7 +174,7 @@ fun AppNativeAdView(
                                     ?: adContainer.findViewById<NativeAdView>(R.id.native_ad_view)
                                     ?: adContainer.findViewById<NativeAdView>(R.id.native_ad_fullscreen_view)
                                 if (nativeAdView != null) {
-                                    NativeAdsManager.applyThemeStyles(nativeAdView)
+                                    NativeAdsManager.applyThemeStyles(nativeAdView, forceDark = effectiveForceDark)
                                 }
                             }
                         },
@@ -174,31 +184,44 @@ fun AppNativeAdView(
             }
 
             AdDisplayState.FALLBACK_BANNER -> {
-                val bannerId = AdManager.getBannerAdId(screenKey)
+                val bannerId = AdManager.getFallbackBannerAdId(screenKey)
+                    ?: AdManager.getBannerAdId(screenKey)
                     ?: AdManager.getBannerAdId("home_screen")
                     ?: AdManager.getBannerAdId("splash")
                 if (bannerId != null) {
-                    if (screenKey == "splash" || screenKey == "onboarding_screen" || screenKey == "language_screen" || templateType > 1) {
-                        // For splash, onboarding and larger templates, fallback is inline banner matching shimmer size
+                    if (isInlineFallback) {
+                        android.util.Log.d("ADSMANAGER", "[$screenKey][banner] Displaying ResponsiveInlineBanner fallback with template $templateType")
                         ResponsiveInlineBanner(
                             adUnitId = bannerId,
                             modifier = Modifier.fillMaxWidth(),
                             template = templateType,
+                            forceDarkMode = effectiveForceDark,
+                            onAdLoaded = {
+                                android.util.Log.d("ADSMANAGER", "[$screenKey][banner] Inline banner fallback loaded successfully")
+                            },
                             onAdFailed = {
+                                android.util.Log.e("ADSMANAGER", "[$screenKey][banner] Inline banner fallback failed to load -> hiding container")
                                 displayState = AdDisplayState.HIDDEN
                             }
                         )
                     } else {
+                        android.util.Log.d("ADSMANAGER", "[$screenKey][banner] Displaying NextGenAdaptiveBanner (small adaptive banner) fallback")
                         NextGenAdaptiveBanner(
                             adUnitId = bannerId,
                             modifier = Modifier.fillMaxWidth(),
                             isInline = false,
+                            forceDarkMode = effectiveForceDark,
+                            onAdLoaded = {
+                                android.util.Log.d("ADSMANAGER", "[$screenKey][banner] Small adaptive banner fallback loaded successfully")
+                            },
                             onAdFailed = {
+                                android.util.Log.e("ADSMANAGER", "[$screenKey][banner] Small adaptive banner fallback failed to load -> hiding container")
                                 displayState = AdDisplayState.HIDDEN
                             }
                         )
                     }
                 } else {
+                    android.util.Log.w("ADSMANAGER", "[$screenKey][banner] No banner ID available for fallback -> hiding container")
                     displayState = AdDisplayState.HIDDEN
                 }
             }

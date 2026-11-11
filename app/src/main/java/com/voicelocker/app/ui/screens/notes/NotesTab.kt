@@ -3,6 +3,7 @@
 package com.voicelocker.app.ui.screens.notes
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -39,6 +40,7 @@ import androidx.navigation.NavHostController
 import com.voicelocker.ads.AppAdaptiveBannerTop
 import com.voicelocker.ads.AppNativeAdView
 import com.voicelocker.ads.AppOpenAdManager
+import com.voicelocker.ads.CounterAdManager
 import com.voicelocker.app.R
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.data.model.Note
@@ -192,15 +194,28 @@ fun NotesTab(nav: NavHostController) {
     }
 
     fun startCreate() {
-        val hasMic = ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-        if (hasMic) {
-            nav.navigate("noteEdit")
-        } else {
-            AppOpenAdManager.suppressAppOpenFor(60_000L)
-            micL.launch(Manifest.permission.RECORD_AUDIO)
+        CounterAdManager.onAction(
+            activity = ctx as? Activity,
+            screenKey = "voice_note_screen",
+            adKey = "interstitial"
+        ) {
+            val hasMic = ContextCompat.checkSelfPermission(ctx, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+            if (hasMic) {
+                nav.navigate("noteEdit")
+            } else {
+                AppOpenAdManager.suppressAppOpenFor(60_000L)
+                micL.launch(Manifest.permission.RECORD_AUDIO)
+            }
         }
     }
     val cols = if (LocalConfiguration.current.screenWidthDp >= 600) 4 else 2
+
+    LaunchedEffect(notes.size) {
+        android.util.Log.d(
+            "ADSMANAGER",
+            "[voice_note_screen] Notes count: ${notes.size}. Native ad visible=${notes.isNotEmpty()} (template=2 Medium Native, fallback=adaptive banner)"
+        )
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Fixed Top Header & Banner
@@ -347,10 +362,34 @@ fun NotesTab(nav: NavHostController) {
                             modifier = Modifier
                                 .weight(1f)
                                 .aspectRatio(1f),
-                            onOpen = { nav.navigate("note/${n.id}") },
-                            onEdit = { nav.navigate("noteEdit?id=${n.id}") },
+                            onOpen = {
+                                CounterAdManager.onAction(
+                                    activity = ctx as? Activity,
+                                    screenKey = "voice_note_screen",
+                                    adKey = "interstitial"
+                                ) {
+                                    nav.navigate("note/${n.id}")
+                                }
+                            },
+                            onEdit = {
+                                CounterAdManager.onAction(
+                                    activity = ctx as? Activity,
+                                    screenKey = "voice_note_screen",
+                                    adKey = "interstitial"
+                                ) {
+                                    nav.navigate("noteEdit?id=${n.id}")
+                                }
+                            },
                             onDelete = { del = n },
-                            onAi = { nav.navigate("note/${n.id}?tab=1") }
+                            onAi = {
+                                CounterAdManager.onAction(
+                                    activity = ctx as? Activity,
+                                    screenKey = "voice_note_screen",
+                                    adKey = "interstitial"
+                                ) {
+                                    nav.navigate("note/${n.id}?tab=1")
+                                }
+                            }
                         )
                     }
                     repeat(cols - row.size) { Spacer(Modifier.weight(1f)) }
@@ -361,14 +400,17 @@ fun NotesTab(nav: NavHostController) {
     }
 }
 
-    // Fixed Bottom Native Ad
-    AppNativeAdView(
-        screenKey = "voice_note_screen",
-        template = 1,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 14.dp)
-    )
+    // Fixed Bottom Native Ad: Medium Native (template 2) with Fallback Adaptive Banner, ONLY when there is content on the screen
+    if (notes.isNotEmpty()) {
+        AppNativeAdView(
+            screenKey = "voice_note_screen",
+            template = 2,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp),
+            fallbackInline = false
+        )
+    }
 }
 
     if (askMic) {

@@ -21,7 +21,9 @@ import androidx.navigation.NavHostController
 import com.voicelocker.ads.AdLoadingDialog
 import com.voicelocker.ads.AdManager
 import com.voicelocker.ads.BillingManager
+import com.voicelocker.ads.CounterAdManager
 import com.voicelocker.ads.InterstitialAdManager
+import com.voicelocker.ads.RemoteConfigManager
 import com.voicelocker.app.R
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.data.model.lockThemes
@@ -75,7 +77,16 @@ fun ThemePreviewScreen(nav: NavHostController, i: Int) {
             ) {
                 // Preview Button with ic_preview icon and blue border/text
                 Button(
-                    onClick = { nav.navigate("lockPreview/$i") },
+                    onClick = {
+                        CounterAdManager.onAction(
+                            activity = act,
+                            screenKey = "theme_screen",
+                            adKey = "interstitial",
+                            onLoading = { loadingAd = it }
+                        ) {
+                            nav.navigate("lockPreview/$i")
+                        }
+                    },
                     modifier = Modifier
                         .weight(1f)
                         .height(50.dp),
@@ -107,18 +118,12 @@ fun ThemePreviewScreen(nav: NavHostController, i: Int) {
                         if (!isUnlocked) {
                             showUnlockDialog = true
                         } else {
-                            Log.d("ADSMANAGER", "[theme_screen][inter_apply] Interstitial show triggered on Apply click")
-                            if (act != null) {
-                                InterstitialAdManager.show(
-                                    activity = act,
-                                    screenKey = "theme_screen",
-                                    adKey = "inter_apply",
-                                    onLoading = { loadingAd = it }
-                                ) {
-                                    Log.d("ADSMANAGER", "[theme_screen][inter_apply] Interstitial flow completed -> applying theme")
-                                    applyThemeAndShowSuccess()
-                                }
-                            } else {
+                            CounterAdManager.onAction(
+                                activity = act,
+                                screenKey = "theme_screen",
+                                adKey = "inter_apply",
+                                onLoading = { loadingAd = it }
+                            ) {
                                 applyThemeAndShowSuccess()
                             }
                         }
@@ -162,7 +167,9 @@ fun ThemePreviewScreen(nav: NavHostController, i: Int) {
                 applyThemeAndShowSuccess()
             },
             onBuyPremium = {
-                nav.navigate("premium")
+                if (RemoteConfigManager.isInAppScreenEnabled()) {
+                    nav.navigate("premium")
+                }
             }
         )
     }

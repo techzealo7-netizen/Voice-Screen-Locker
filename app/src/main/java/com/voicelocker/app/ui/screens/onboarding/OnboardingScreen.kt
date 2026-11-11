@@ -35,6 +35,7 @@ import com.voicelocker.ads.AdLoadingDialog
 import com.voicelocker.ads.AdManager
 import com.voicelocker.ads.AppNativeAdView
 import com.voicelocker.ads.InterstitialAdManager
+import com.voicelocker.ads.RemoteConfigManager
 import com.voicelocker.app.R
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.ui.components.MaxContentWidth
@@ -90,6 +91,15 @@ fun OnboardingScreen(onFinish: () -> Unit) {
     }
 
     LaunchedEffect(Unit) {
+        if (!RemoteConfigManager.isOnboardingScreenEnabled()) {
+            Log.d("ADSMANAGER", "[onboarding_screen] Screen disabled in Remote Config -> skipping to finish")
+            onFinish()
+            return@LaunchedEffect
+        }
+        Log.d(
+            "ADSMANAGER",
+            "[onboarding_screen] Screen opened. Native bottom enabled=${AdManager.isNativeEnabled("onboarding_screen")}, template=${AdManager.getNativeTemplate("onboarding_screen")}"
+        )
         // Preload fresh interstitial ad at onboarding screen launch if enabled
         InterstitialAdManager.preload("onboarding_screen", "interstitial")
     }

@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -19,6 +20,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.voicelocker.ads.AdLoadingDialog
+import com.voicelocker.ads.CounterAdManager
 import com.voicelocker.app.R
 import com.voicelocker.app.ui.components.ExitDialog
 import com.voicelocker.app.ui.screens.notes.NotesTab
@@ -31,10 +34,18 @@ fun MainScreen(nav: NavHostController) {
     val c = MaterialTheme.colorScheme
     var tab by rememberSaveable { mutableIntStateOf(0) }
     var showExitDialog by rememberSaveable { mutableStateOf(false) }
+    var loadingAd by remember { mutableStateOf(false) }
 
     BackHandler {
         if (tab != 0) {
-            tab = 0
+            CounterAdManager.onAction(
+                activity = activity,
+                screenKey = "home_screen",
+                adKey = "interstitial",
+                onLoading = { loadingAd = it }
+            ) {
+                tab = 0
+            }
         } else {
             showExitDialog = true
         }
@@ -54,7 +65,18 @@ fun MainScreen(nav: NavHostController) {
                     val isSelected = tab == i
                     NavigationBarItem(
                         selected = isSelected,
-                        onClick = { tab = i },
+                        onClick = {
+                            if (tab != i) {
+                                CounterAdManager.onAction(
+                                    activity = activity,
+                                    screenKey = "home_screen",
+                                    adKey = "interstitial",
+                                    onLoading = { loadingAd = it }
+                                ) {
+                                    tab = i
+                                }
+                            }
+                        },
                         icon = {
                             Icon(
                                 painter = painterResource(iconRes),
@@ -101,4 +123,6 @@ fun MainScreen(nav: NavHostController) {
             }
         )
     }
+
+    AdLoadingDialog(isVisible = loadingAd)
 }

@@ -56,6 +56,13 @@ fun PinScreen(nav: NavHostController, flow: String) {
         }
     }
 
+    LaunchedEffect(Unit) {
+        android.util.Log.d(
+            "ADSMANAGER",
+            "[set_pin_lock_screen] Set PIN Screen opened. Native bottom enabled=${com.voicelocker.ads.AdManager.isNativeEnabled("set_pin_lock_screen")}, template=1, fallback=small adaptive banner"
+        )
+    }
+
     Page(
         title = "Set Pin Lock",
         onBack = {
@@ -70,6 +77,7 @@ fun PinScreen(nav: NavHostController, flow: String) {
         scroll = false,
         adScreenKey = "set_pin_lock_screen",
         nativeTemplate = 1,
+        fallbackInlineBanner = false,
         bottom = {
             Surface(
                 shape = RoundedCornerShape(16.dp),

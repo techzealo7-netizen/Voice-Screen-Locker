@@ -54,6 +54,41 @@ object AdManager {
         return id
     }
 
+    /**
+     * Resolves banner ad unit ID for fallback display when native ad fails to load.
+     * Always provides a valid ID (direct, cross-screen, or test) as long as ads/screens are enabled.
+     */
+    fun getFallbackBannerAdId(screenKey: String): String? {
+        if (!RemoteConfigManager.allAdsEnabled) return null
+        if (!RemoteConfigManager.isScreenEnabled(screenKey)) return null
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "🧪 FallbackBanner[$screenKey] → TEST ID (${TestIds.ADAPTIVE_BANNER})")
+            return TestIds.ADAPTIVE_BANNER
+        }
+
+        // 1. Direct screen banner ID from remote config
+        val directId = RemoteConfigManager.getBannerAdId(screenKey)
+        if (!directId.isNullOrBlank() && isValidId(directId)) {
+            Log.d(TAG, "✅ FallbackBanner[$screenKey] → direct ID: $directId")
+            return directId
+        }
+
+        // 2. Candidate screens fallback
+        val candidates = listOf("voice_note_screen", "theme_screen", "set_pattern_lock_screen", "set_pin_lock_screen", "voice_lock_screen", "voice_record_screen", "onboarding_screen", "language_screen", "home_screen", "splash")
+        for (screen in candidates) {
+            val id = RemoteConfigManager.getBannerAdId(screen)
+            if (!id.isNullOrBlank() && isValidId(id)) {
+                Log.d(TAG, "✅ FallbackBanner[$screenKey] → from $screen: $id")
+                return id
+            }
+        }
+
+        // 3. Fallback to test ID
+        Log.d(TAG, "⚠️ FallbackBanner[$screenKey] → using TEST ID fallback")
+        return TestIds.ADAPTIVE_BANNER
+    }
+
     fun isBannerEnabled(screenKey: String): Boolean {
         if (!RemoteConfigManager.allAdsEnabled) return false
         if (!RemoteConfigManager.isScreenEnabled(screenKey)) return false
@@ -98,12 +133,23 @@ object AdManager {
                 Log.d(TAG, "✅ Interstitial[$screenKey][$adKey] → $directIds")
                 return directIds
             }
-            if (screenKey == "home_screen" && adKey == "interstitial") {
-                val candidateKeys = listOf("inter_pin_lock", "inter_voice_lock", "inter_fingerprint_lock", "inter_pattern_lock", "inter_see_more", "interstitial_nth_click")
+            if (screenKey == "home_screen") {
+                val candidateKeys = listOf("inter_pin_lock", "inter_voice_lock", "inter_fingerprint_lock", "inter_pattern_lock", "inter_see_more", "interstitial_nth_click", "interstitial")
                 for (k in candidateKeys) {
                     val ids = RemoteConfigManager.getInterstitialIds(screenKey, k).filter { isValidId(it) }
                     if (ids.isNotEmpty()) return ids
                 }
+            }
+            // Fallback to home_screen candidate IDs for dashboard/ahead screens
+            val homeCandidateKeys = listOf("inter_pin_lock", "inter_fingerprint_lock", "inter_pattern_lock", "inter_see_more", "interstitial_nth_click", "interstitial")
+            for (k in homeCandidateKeys) {
+                val ids = RemoteConfigManager.getInterstitialIds("home_screen", k).filter { isValidId(it) }
+                if (ids.isNotEmpty()) return ids
+            }
+            val candidateScreens = listOf("theme_screen", "language_screen", "onboarding_screen", "splash")
+            for (s in candidateScreens) {
+                val ids = RemoteConfigManager.getInterstitialIds(s, "interstitial").filter { isValidId(it) }
+                if (ids.isNotEmpty()) return ids
             }
             listOf(TestIds.INTERSTITIAL)
         }
@@ -141,15 +187,23 @@ object AdManager {
             Log.d(TAG, "❌ Screen[$screenKey] explicitly disabled in Remote Config")
             return false
         }
+
+        // ✅ SECOND STRATEGY (Applies to dashboard and ahead screens for Interstitial ads only)
+        if (RemoteConfigManager.isSecondStrategyEnabled() && SecondStrategyManager.isDashboardOrAheadScreen(screenKey)) {
+            val eligible = SecondStrategyManager.canShowInterstitial()
+            Log.d(TAG, "[SecondStrategy][$screenKey][$adKey] isInterstitialEnabled = $eligible")
+            return eligible
+        }
+
         val config = RemoteConfigManager.getAdConfig(screenKey, adKey)
         if (config != null && !config.isEnabled) {
             Log.d(TAG, "❌ Interstitial[$screenKey][$adKey] explicitly disabled in Remote Config")
             return false
         }
 
-        if (screenKey == "home_screen" && adKey == "interstitial") {
+        if (screenKey == "home_screen" && (adKey == "interstitial" || adKey == "inter_voice_lock")) {
             val homeEnabled = isHomeInterstitialEnabled()
-            Log.d(TAG, "isInterstitialEnabled(home_screen, interstitial) = $homeEnabled")
+            Log.d(TAG, "isInterstitialEnabled(home_screen, $adKey) = $homeEnabled")
             return homeEnabled
         }
 

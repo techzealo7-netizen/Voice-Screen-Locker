@@ -197,10 +197,23 @@ object InterstitialAdManager {
             return
         }
 
-        // Case 3: No preloaded ad and not preloading — proceed immediately (no slow runtime load)
-        Log.d(TAG, "[$screenKey][$adKey] No preloaded ad available — proceeding immediately")
-        preload(screenKey, adKey)
-        onComplete()
+        // Case 3: No preloaded ad and not preloading — load on demand with loading dialog
+        val adUnitIds = AdManager.getInterstitialIds(screenKey, adKey)
+        if (adUnitIds.isEmpty()) {
+            Log.w(TAG, "[$screenKey][$adKey] No valid interstitial IDs found — skipping show")
+            onComplete()
+            return
+        }
+
+        Log.d(TAG, "[$screenKey][$adKey] No preloaded ad available — loading on demand with loading dialog")
+        show(
+            activity = activity,
+            adUnitIds = adUnitIds,
+            screenKey = screenKey,
+            adKey = adKey,
+            onLoading = onLoading,
+            onComplete = onComplete
+        )
     }
 
     /** Direct overload for callers with explicit IDs list. */
@@ -313,6 +326,11 @@ object InterstitialAdManager {
         ad.adEventCallback = object : InterstitialAdEventCallback {
             override fun onAdShowedFullScreenContent() {
                 Log.d(TAG, "[$screenKey][$adKey] Interstitial ad show success")
+                if (RemoteConfigManager.isSecondStrategyEnabled() && SecondStrategyManager.isDashboardOrAheadScreen(screenKey)) {
+                    SecondStrategyManager.onInterstitialShown(screenKey, adKey)
+                } else if (!RemoteConfigManager.isSecondStrategyEnabled()) {
+                    CounterAdManager.onInterstitialDisplayed()
+                }
             }
 
             override fun onAdDismissedFullScreenContent() {

@@ -81,7 +81,8 @@ object NativeAdsManager {
         context: Context,
         template: Int,
         shimmerContainer: ViewGroup?,
-        shimmerView: View? = null
+        shimmerView: View? = null,
+        forceDark: Boolean? = null
     ) {
         val shimmerResId = getTemplateShimmer(template)
         val target: ViewGroup? = shimmerContainer ?: (shimmerView as? ViewGroup)
@@ -97,7 +98,7 @@ object NativeAdsManager {
             target.tag = shimmerResId
             target.visibility = View.VISIBLE
 
-            val isDark = ThemeManager.isDark(context)
+            val isDark = forceDark ?: ThemeManager.isDark(context)
             updateShimmerTheme(target, template, isDark)
 
             findShimmer(target)?.startShimmer()
@@ -183,7 +184,8 @@ object NativeAdsManager {
         shimmerContainer: ViewGroup? = null,
         shimmerView: View? = null,
         onClose: (() -> Unit)? = null,
-        listener: NativeShowListener? = null
+        listener: NativeShowListener? = null,
+        forceDark: Boolean? = null
     ) {
         if (adUnitId.isBlank() || !isInternetAvailable(context)) {
             Log.w(TAG, "⚠️ [Native] CANCELLED: adUnitId is blank or no internet")
@@ -195,7 +197,7 @@ object NativeAdsManager {
 
         val layoutResId = getTemplateLayout(template)
         Log.d(TAG, "📡 [Native] Request sent: adUnitId=$adUnitId, template=$template, layoutResId=$layoutResId")
-        showDynamicShimmer(context, template, shimmerContainer, shimmerView)
+        showDynamicShimmer(context, template, shimmerContainer, shimmerView, forceDark = forceDark)
 
         CoroutineScope(Dispatchers.Main).launch {
             try {
@@ -223,7 +225,7 @@ object NativeAdsManager {
                             Handler(Looper.getMainLooper()).post {
                                 try {
                                     Log.d(TAG, "▶️ [Native] Show requested (rendering into container)")
-                                    renderIntoContainer(context, nativeAd, container, layoutResId, onClose)
+                                    renderIntoContainer(context, nativeAd, container, layoutResId, onClose, forceDark = forceDark)
                                     hideDynamicShimmer(shimmerContainer, shimmerView)
                                     container.visibility = View.VISIBLE
                                     Log.d(TAG, "🎉 [Native] Show success (view rendered and visible)")
@@ -261,7 +263,8 @@ object NativeAdsManager {
         nativeAd: NativeAd,
         container: FrameLayout,
         layoutResId: Int,
-        onClose: (() -> Unit)? = null
+        onClose: (() -> Unit)? = null,
+        forceDark: Boolean? = null
     ) {
         val inflatedView = LayoutInflater.from(context).inflate(layoutResId, container, false)
         val adView = (inflatedView as? NativeAdView)
@@ -278,7 +281,7 @@ object NativeAdsManager {
             }
 
         if (adView != null) {
-            populateNativeAdView(nativeAd, adView, onClose)
+            populateNativeAdView(nativeAd, adView, onClose, forceDark = forceDark)
         }
         container.removeAllViews()
         container.addView(inflatedView)
@@ -287,7 +290,8 @@ object NativeAdsManager {
     fun populateNativeAdView(
         nativeAd: NativeAd,
         nativeAdView: NativeAdView,
-        onClose: (() -> Unit)? = null
+        onClose: (() -> Unit)? = null,
+        forceDark: Boolean? = null
     ) {
         val closeBtn = nativeAdView.findViewById<View>(R.id.btn_close_native_ad)
         if (closeBtn != null) {
@@ -365,7 +369,7 @@ object NativeAdsManager {
             mediaView.visibility = View.VISIBLE
         }
 
-        applyThemeStyles(nativeAdView)
+        applyThemeStyles(nativeAdView, forceDark = forceDark)
 
         nativeAd.adEventCallback = object : NativeAdEventCallback {
             override fun onAdImpression() {
@@ -458,8 +462,8 @@ object NativeAdsManager {
         }
     }
 
-    fun applyThemeStyles(nativeAdView: NativeAdView) {
-        val isDark = ThemeManager.isDark(nativeAdView.context)
+    fun applyThemeStyles(nativeAdView: NativeAdView, forceDark: Boolean? = null) {
+        val isDark = forceDark ?: ThemeManager.isDark(nativeAdView.context)
         val density = nativeAdView.resources.displayMetrics.density
 
         val isFullScreen = nativeAdView.id == R.id.native_ad_fullscreen_view ||
@@ -485,6 +489,8 @@ object NativeAdsManager {
             bodyView?.setTextColor(if (isDark) Color.parseColor("#8A94AA") else Color.parseColor("#475569"))
             return
         }
+
+        nativeAdView.setBackgroundColor(Color.TRANSPARENT)
 
         val bgContainer = nativeAdView.findViewById<View>(R.id.background)
             ?: if (nativeAdView.childCount > 0) nativeAdView.getChildAt(0) else nativeAdView

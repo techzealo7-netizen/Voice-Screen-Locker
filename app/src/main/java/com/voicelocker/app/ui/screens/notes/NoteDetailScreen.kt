@@ -55,11 +55,19 @@ fun NoteDetailScreen(nav: NavHostController, id: String, initialTab: Int) {
         return
     }
 
+    LaunchedEffect(Unit) {
+        android.util.Log.d(
+            "ADSMANAGER",
+            "[voice_note_screen] Voice Note Screen (NoteDetail) opened. Native bottom enabled=${com.voicelocker.ads.AdManager.isNativeEnabled("voice_note_screen")}, template=3 (Large Native), fallback=inline banner"
+        )
+    }
+
     Page(
         title = note.title,
         onBack = { nav.popBackStack() },
         adScreenKey = "voice_note_screen",
-        nativeTemplate = 1,
+        nativeTemplate = 3,
+        fallbackInlineBanner = true,
         actions = {
             Box {
                 IconButton({ menu = true }) {

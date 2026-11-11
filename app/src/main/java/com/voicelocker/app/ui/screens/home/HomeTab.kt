@@ -2,6 +2,14 @@ package com.voicelocker.app.ui.screens.home
 
 import android.app.Activity
 import android.util.Log
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,6 +24,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +45,10 @@ import com.voicelocker.app.ui.components.MaxContentWidth
 import com.voicelocker.app.ui.components.Muted
 import com.voicelocker.app.ui.components.ThemeHorizontalRow
 import com.voicelocker.app.ui.components.ThemeUnlockDialog
+import com.voicelocker.app.ui.theme.Blue
 import com.voicelocker.app.ui.theme.InterFontFamily
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Composable
 fun LockTileBtn(
@@ -54,6 +69,120 @@ fun LockTileBtn(
     )
     Spacer(Modifier.height(6.dp))
     Text(label, fontFamily = InterFontFamily, fontSize = 11.sp, textAlign = TextAlign.Center)
+}
+
+/**
+ * Animated Voice Lock Button:
+ * When inactive, animates in an organic ripple & bubble wave form with expanding
+ * concentric halos and floating bubble particles, plus a subtle gentle pulse on the mic button.
+ */
+@Composable
+fun VoiceLockMicButton(
+    isActive: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "mic_ripple_transition")
+
+    val rippleProgress by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 2400, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "ripple_progress"
+    )
+
+    val micScale by infiniteTransition.animateFloat(
+        initialValue = if (!isActive) 0.96f else 1f,
+        targetValue = if (!isActive) 1.04f else 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "mic_scale"
+    )
+
+    val rippleColor = Blue
+
+    Box(
+        modifier = modifier.size(150.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        // Draw ripple and bubbles only when inactive
+        if (!isActive) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val centerOffset = center
+                val baseRadius = 48.dp.toPx() // radius of 96dp mic button
+                val maxRadius = 72.dp.toPx()  // expands out to 144dp diameter
+
+                // 1. Concentric expanding ripple waves & bubble halos
+                for (i in 0 until 3) {
+                    val phase = (rippleProgress + i * (1f / 3f)) % 1f
+                    val currentRadius = baseRadius + phase * (maxRadius - baseRadius)
+                    val alpha = ((1f - phase) * (1f - phase)).coerceIn(0f, 1f)
+
+                    // Bubble fill halo
+                    drawCircle(
+                        color = rippleColor.copy(alpha = alpha * 0.16f),
+                        radius = currentRadius,
+                        center = centerOffset
+                    )
+
+                    // Bubble ripple stroke edge
+                    drawCircle(
+                        color = rippleColor.copy(alpha = alpha * 0.45f),
+                        radius = currentRadius,
+                        center = centerOffset,
+                        style = Stroke(width = 1.8.dp.toPx())
+                    )
+                }
+
+                // 2. Floating organic bubble particles around the button
+                val bubbleAngles = floatArrayOf(35f, 95f, 160f, 220f, 285f, 335f)
+                val bubbleBaseSizes = floatArrayOf(3.5f, 4.5f, 3.0f, 5.0f, 3.8f, 4.2f)
+
+                for (idx in bubbleAngles.indices) {
+                    val phase = (rippleProgress + idx * (1f / bubbleAngles.size)) % 1f
+                    val distance = baseRadius + 3.dp.toPx() + phase * (maxRadius - baseRadius - 4.dp.toPx())
+                    val angleRad = Math.toRadians(bubbleAngles[idx].toDouble())
+                    val bx = centerOffset.x + (distance * cos(angleRad)).toFloat()
+                    val by = centerOffset.y + (distance * sin(angleRad)).toFloat()
+                    val bAlpha = ((1f - phase) * (1f - phase)).coerceIn(0f, 1f)
+                    val bRadius = bubbleBaseSizes[idx].dp.toPx() * (0.8f + phase * 0.35f)
+
+                    // Translucent bubble body
+                    drawCircle(
+                        color = rippleColor.copy(alpha = bAlpha * 0.35f),
+                        radius = bRadius,
+                        center = Offset(bx, by)
+                    )
+                    // White shine/reflection ring on bubble
+                    drawCircle(
+                        color = Color.White.copy(alpha = bAlpha * 0.65f),
+                        radius = bRadius,
+                        center = Offset(bx, by),
+                        style = Stroke(width = 1.dp.toPx())
+                    )
+                }
+            }
+        }
+
+        // Central Mic Button
+        Image(
+            painter = painterResource(R.drawable.ic_mic_home),
+            contentDescription = "Voice Lock",
+            modifier = Modifier
+                .size(96.dp)
+                .graphicsLayer {
+                    scaleX = micScale
+                    scaleY = micScale
+                }
+                .clip(CircleShape)
+                .clickable(onClick = onClick)
+        )
+    }
 }
 
 @Composable
@@ -80,27 +209,26 @@ fun HomeTab(nav: NavHostController) {
     }
 
     fun showInterOrNavigate(adKey: String, onNavigate: () -> Unit) {
-        clickCount++
-        val threshold = RemoteConfigManager.getInterstitialClickThreshold("home_screen")
-        val isNth = threshold > 0 && clickCount % threshold == 0
-        val effectiveAdKey = if (isNth && AdManager.isInterstitialEnabled("home_screen", "interstitial_nth_click")) {
-            "interstitial_nth_click"
-        } else {
+        val isSecondStrategy = RemoteConfigManager.isSecondStrategyEnabled()
+        val effectiveAdKey = if (isSecondStrategy) {
             adKey
+        } else {
+            clickCount++
+            val threshold = RemoteConfigManager.getInterstitialClickThreshold("home_screen")
+            val isNth = threshold > 0 && clickCount % threshold == 0
+            if (isNth && AdManager.isInterstitialEnabled("home_screen", "interstitial_nth_click")) {
+                "interstitial_nth_click"
+            } else {
+                adKey
+            }
         }
 
-        Log.d("ADSMANAGER", "[home_screen][$effectiveAdKey] Interstitial show triggered (clickCount=$clickCount, isNth=$isNth)")
-        if (activity != null) {
-            InterstitialAdManager.show(
-                activity = activity,
-                screenKey = "home_screen",
-                adKey = effectiveAdKey,
-                onLoading = { loadingAd = it }
-            ) {
-                Log.d("ADSMANAGER", "[home_screen][$effectiveAdKey] Interstitial flow completed -> navigating")
-                onNavigate()
-            }
-        } else {
+        CounterAdManager.onAction(
+            activity = activity,
+            screenKey = "home_screen",
+            adKey = effectiveAdKey,
+            onLoading = { loadingAd = it }
+        ) {
             onNavigate()
         }
     }
@@ -126,7 +254,11 @@ fun HomeTab(nav: NavHostController) {
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold
                     )
-                    IconButton({ nav.navigate("premium") }) {
+                    IconButton({
+                        if (RemoteConfigManager.isInAppScreenEnabled()) {
+                            nav.navigate("premium")
+                        }
+                    }) {
                         Image(
                             painter = painterResource(R.drawable.ic_crown_home),
                             contentDescription = "Premium",
@@ -152,16 +284,12 @@ fun HomeTab(nav: NavHostController) {
                     .padding(horizontal = 16.dp)
                     .padding(top = 4.dp, bottom = 16.dp)
             ) {
-                ColCard(center = true, pad = 22.dp) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_mic_home),
-                        contentDescription = "Voice Lock",
-                        modifier = Modifier
-                            .size(96.dp)
-                            .clip(CircleShape)
-                            .clickable { showInterOrNavigate("inter_voice_lock") { nav.navigate("voiceIntro") } }
+                ColCard(center = true, pad = 14.dp) {
+                    VoiceLockMicButton(
+                        isActive = active,
+                        onClick = { showInterOrNavigate("inter_voice_lock") { nav.navigate("voiceIntro") } }
                     )
-                    Spacer(Modifier.height(14.dp))
+                    Spacer(Modifier.height(8.dp))
                     Text(
                         if (active) "Voice lock Active" else "Voice lock Inactive",
                         fontFamily = InterFontFamily,
@@ -212,10 +340,12 @@ fun HomeTab(nav: NavHostController) {
                     )
                 }
                 ThemeHorizontalRow { it ->
-                    if (Store.isThemeUnlocked(it, isPremium)) {
-                        nav.navigate("themePreview/$it")
-                    } else {
-                        unlockDialogThemeIndex = it
+                    showInterOrNavigate("inter_see_more") {
+                        if (Store.isThemeUnlocked(it, isPremium)) {
+                            nav.navigate("themePreview/$it")
+                        } else {
+                            unlockDialogThemeIndex = it
+                        }
                     }
                 }
 
@@ -227,7 +357,9 @@ fun HomeTab(nav: NavHostController) {
                             nav.navigate("themePreview/$themeIdx")
                         },
                         onBuyPremium = {
-                            nav.navigate("premium")
+                            if (RemoteConfigManager.isInAppScreenEnabled()) {
+                                nav.navigate("premium")
+                            }
                         }
                     )
                 }

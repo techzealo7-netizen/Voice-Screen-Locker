@@ -35,6 +35,7 @@ import androidx.navigation.NavHostController
 import com.voicelocker.ads.AdLoadingDialog
 import com.voicelocker.ads.AdManager
 import com.voicelocker.ads.InterstitialAdManager
+import com.voicelocker.ads.RemoteConfigManager
 import com.voicelocker.app.R
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.ui.navigation.NavRoutes
@@ -93,10 +94,6 @@ fun PremiumScreen(
         "Remove Ads"
     )
 
-    LaunchedEffect(Unit) {
-        InterstitialAdManager.preload("in_app_screen", "interstitial")
-    }
-
     val proceedToDestination: () -> Unit = {
         if (from == "onboarding" || from == "splash") {
             Store.onboarded = true
@@ -108,21 +105,16 @@ fun PremiumScreen(
         }
     }
 
-    val handleDismiss: () -> Unit = {
-        Log.d("ADSMANAGER", "[in_app_screen][interstitial] Interstitial show triggered on paywall dismiss")
-        if (activity != null) {
-            InterstitialAdManager.show(
-                activity = activity,
-                screenKey = "in_app_screen",
-                adKey = "interstitial",
-                onLoading = { loadingAd = it }
-            ) {
-                Log.d("ADSMANAGER", "[in_app_screen][interstitial] Interstitial flow completed -> proceeding to destination")
-                proceedToDestination()
-            }
-        } else {
+    LaunchedEffect(Unit) {
+        if (!RemoteConfigManager.isInAppScreenEnabled()) {
             proceedToDestination()
+            return@LaunchedEffect
         }
+    }
+
+    val handleDismiss: () -> Unit = {
+        Log.d("ADSMANAGER", "[in_app_screen] Paywall dismissed via cross/back -> proceeding directly without interstitial")
+        proceedToDestination()
     }
 
     BackHandler {

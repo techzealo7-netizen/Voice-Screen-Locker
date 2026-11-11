@@ -126,6 +126,7 @@ fun ResponsiveInlineBanner(
     adUnitId: String,
     modifier: Modifier = Modifier,
     template: Int = 1,
+    forceDarkMode: Boolean? = null,
     onAdLoaded: (() -> Unit)? = null,
     onAdFailed: (() -> Unit)? = null
 ) {
@@ -144,6 +145,7 @@ fun ResponsiveInlineBanner(
         isInline = true,
         inlineMaxHeightDp = exactHeight.value.toInt(),
         template = template,
+        forceDarkMode = forceDarkMode,
         onAdLoaded = onAdLoaded,
         onAdFailed = onAdFailed
     )
@@ -157,6 +159,7 @@ fun NextGenAdaptiveBanner(
     isInline: Boolean = false,
     inlineMaxHeightDp: Int = 150,
     template: Int = 1,
+    forceDarkMode: Boolean? = null,
     onAdLoaded: (() -> Unit)? = null,
     onAdFailed: (() -> Unit)? = null
 ) {
@@ -364,7 +367,8 @@ fun NextGenAdaptiveBanner(
             return@BoxWithConstraints
         }
 
-        val isDark by ThemeManager.isDarkMode.collectAsStateWithLifecycle()
+        val isDarkState by ThemeManager.isDarkMode.collectAsStateWithLifecycle()
+        val isDark = forceDarkMode ?: isDarkState
         val cardBg = if (isDark) Color(0xFF121826) else Color.White
         val cardBorder = if (isDark) Color(0xFF2A3550) else Color(0xFFE2E8F0)
 
@@ -514,9 +518,16 @@ fun NextGenAdaptiveBanner(
                 }
                 isLoading -> {
                     if (isInline) {
-                        NativeShimmerPlaceholder(modifier = Modifier.fillMaxWidth(), template = template)
+                        NativeShimmerPlaceholder(
+                            modifier = Modifier.fillMaxWidth(),
+                            template = template,
+                            forceDarkMode = forceDarkMode
+                        )
                     } else {
-                        BannerShimmerPlaceholder(height = targetHeight)
+                        BannerShimmerPlaceholder(
+                            height = targetHeight,
+                            forceDarkMode = forceDarkMode
+                        )
                     }
                 }
             }
@@ -537,9 +548,11 @@ private fun getScreenWidthDp(context: Context): Int {
 @Composable
 fun NativeShimmerPlaceholder(
     modifier: Modifier = Modifier,
-    template: Int = 1
+    template: Int = 1,
+    forceDarkMode: Boolean? = null
 ) {
-    val isDark by ThemeManager.isDarkMode.collectAsStateWithLifecycle()
+    val isDarkState by ThemeManager.isDarkMode.collectAsStateWithLifecycle()
+    val isDark = forceDarkMode ?: isDarkState
 
     AndroidView(
         modifier = modifier.fillMaxWidth(),
@@ -581,9 +594,11 @@ fun NativeShimmerPlaceholder(
 @Composable
 fun BannerShimmerPlaceholder(
     modifier: Modifier = Modifier,
-    height: Dp = BannerHeight
+    height: Dp = BannerHeight,
+    forceDarkMode: Boolean? = null
 ) {
-    val isDarkMode by ThemeManager.isDarkMode.collectAsStateWithLifecycle()
+    val isDarkModeState by ThemeManager.isDarkMode.collectAsStateWithLifecycle()
+    val isDarkMode = forceDarkMode ?: isDarkModeState
     val transition = rememberInfiniteTransition(label = "banner_shimmer_transition")
     val translateAnim by transition.animateFloat(
         initialValue = -300f,

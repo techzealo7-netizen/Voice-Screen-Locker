@@ -2,6 +2,8 @@
 
 package com.voicelocker.app.ui.components
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
@@ -37,9 +39,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.voicelocker.ads.AdLoadingDialog
 import com.voicelocker.ads.AppAdaptiveBannerTop
 import com.voicelocker.ads.AppNativeAdView
 import com.voicelocker.ads.BillingManager
+import com.voicelocker.ads.CounterAdManager
 import com.voicelocker.app.R
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.data.model.languages
@@ -63,9 +67,34 @@ fun Page(
     scroll: Boolean = true,
     adScreenKey: String? = null,
     nativeTemplate: Int = 1,
+    fallbackInlineBanner: Boolean? = null,
+    nativeAdOnTop: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val c = MaterialTheme.colorScheme
+    val context = LocalContext.current
+    val activity = context as? Activity
+    var loadingAd by remember { mutableStateOf(false) }
+
+    val handleBack: () -> Unit = {
+        if (onBack != null) {
+            CounterAdManager.onAction(
+                activity = activity,
+                screenKey = adScreenKey ?: "home_screen",
+                adKey = "interstitial",
+                onLoading = { loadingAd = it }
+            ) {
+                onBack()
+            }
+        }
+    }
+
+    if (onBack != null) {
+        BackHandler {
+            handleBack()
+        }
+    }
+
     Scaffold(
         containerColor = c.background,
         topBar = {
@@ -77,7 +106,7 @@ fun Page(
                 CenterAlignedTopAppBar(
                     title = { Text(title, fontSize = 18.sp, fontWeight = FontWeight.SemiBold, fontFamily = InterFontFamily) },
                     navigationIcon = {
-                        if (onBack != null) IconButton(onBack) {
+                        if (onBack != null) IconButton(handleBack) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
                         }
                     },
@@ -88,37 +117,52 @@ fun Page(
                     ),
                 )
                 if (adScreenKey != null) {
-                    AppAdaptiveBannerTop(adScreenKey)
+                    if (nativeAdOnTop) {
+                        AppNativeAdView(
+                            screenKey = adScreenKey,
+                            template = nativeTemplate,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp),
+                            isBottom = false,
+                            fallbackInline = fallbackInlineBanner
+                        )
+                    } else {
+                        AppAdaptiveBannerTop(adScreenKey)
+                    }
                 }
             }
         },
         bottomBar = {
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .navigationBarsPadding()
-                    .imePadding(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                val isCompact = LocalConfiguration.current.screenHeightDp < 820
-                if (bottom != null) {
-                    Column(
-                        Modifier
-                            .widthIn(max = MaxContentWidth)
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = if (isCompact) 2.dp else 4.dp),
-                        content = bottom
-                    )
-                }
-                if (adScreenKey != null) {
-                    AppNativeAdView(
-                        screenKey = adScreenKey,
-                        template = nativeTemplate,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 14.dp),
-                        isBottom = false
-                    )
+            if (bottom != null || (!nativeAdOnTop && adScreenKey != null)) {
+                Column(
+                    Modifier
+                        .fillMaxWidth()
+                        .navigationBarsPadding()
+                        .imePadding(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val isCompact = LocalConfiguration.current.screenHeightDp < 820
+                    if (bottom != null) {
+                        Column(
+                            Modifier
+                                .widthIn(max = MaxContentWidth)
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = if (isCompact) 2.dp else 4.dp),
+                            content = bottom
+                        )
+                    }
+                    if (!nativeAdOnTop && adScreenKey != null) {
+                        AppNativeAdView(
+                            screenKey = adScreenKey,
+                            template = nativeTemplate,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp),
+                            isBottom = false,
+                            fallbackInline = fallbackInlineBanner
+                        )
+                    }
                 }
             }
         },
@@ -132,6 +176,8 @@ fun Page(
             )
         }
     }
+
+    AdLoadingDialog(isVisible = loadingAd)
 }
 
 @Composable

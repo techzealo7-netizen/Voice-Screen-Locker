@@ -21,11 +21,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 @Composable
 fun AdLoadingDialog(
     isVisible: Boolean,
-    message: String = "Loading Ad..."
+    message: String = "Loading Ad...",
+    forceDarkMode: Boolean? = null
 ) {
     if (!isVisible) return
 
-    val isDarkMode by ThemeManager.isDarkMode.collectAsStateWithLifecycle()
+    val isDarkModeState by ThemeManager.isDarkMode.collectAsStateWithLifecycle()
+    val isDarkMode = forceDarkMode ?: isDarkModeState
     val cardBgColor = if (isDarkMode) Color(0xFF121826) else Color.White
     val textColor = if (isDarkMode) Color(0xFFF8FAFC) else Color(0xFF333333)
     val progressColor = if (isDarkMode) Color(0xFF60A5FA) else Color(0xFF1A73E8)

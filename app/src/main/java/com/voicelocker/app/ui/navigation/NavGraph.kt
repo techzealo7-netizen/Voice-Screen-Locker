@@ -2,13 +2,17 @@ package com.voicelocker.app.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.voicelocker.ads.AdLoadingDialog
 import com.voicelocker.ads.AppOpenBlackOverlay
+import com.voicelocker.ads.AppOpenLifecycleTracker
 import com.voicelocker.ads.BillingManager
 import com.voicelocker.ads.RemoteConfigManager
 import com.voicelocker.app.data.local.Store
@@ -45,14 +49,21 @@ fun AppRoot() {
     NavHost(nav, startDestination = NavRoutes.SPLASH) {
         composable(NavRoutes.SPLASH) {
             SplashScreen {
+                val isPremium = BillingManager.getInstance(ctx).isPremiumUser()
                 if (!Store.onboarded) {
-                    // Flow 1: splash -> language -> onb -> premium screen -> home
-                    nav.navigate(NavRoutes.LANGUAGE) {
+                    val nextRoute = when {
+                        RemoteConfigManager.isLanguageScreenEnabled() -> NavRoutes.LANGUAGE
+                        RemoteConfigManager.isOnboardingScreenEnabled() -> NavRoutes.ONBOARDING
+                        RemoteConfigManager.isInAppScreenEnabled() && !isPremium -> NavRoutes.premium("splash")
+                        else -> {
+                            Store.onboarded = true
+                            NavRoutes.MAIN
+                        }
+                    }
+                    nav.navigate(nextRoute) {
                         popUpTo(NavRoutes.SPLASH) { inclusive = true }
                     }
                 } else {
-                    // Flow 2: splash -> inapp screen -> Home
-                    val isPremium = BillingManager.getInstance(ctx).isPremiumUser()
                     val inAppEnabled = RemoteConfigManager.isInAppScreenEnabled()
                     if (!isPremium && inAppEnabled) {
                         nav.navigate(NavRoutes.premium("splash")) {
@@ -70,7 +81,16 @@ fun AppRoot() {
             LanguageScreen(
                 onBack = null,
                 onConfirm = {
-                    nav.navigate(NavRoutes.ONBOARDING) {
+                    val isPremium = BillingManager.getInstance(ctx).isPremiumUser()
+                    val nextRoute = when {
+                        RemoteConfigManager.isOnboardingScreenEnabled() -> NavRoutes.ONBOARDING
+                        RemoteConfigManager.isInAppScreenEnabled() && !isPremium -> NavRoutes.premium("onboarding")
+                        else -> {
+                            Store.onboarded = true
+                            NavRoutes.MAIN
+                        }
+                    }
+                    nav.navigate(nextRoute) {
                         popUpTo(NavRoutes.LANGUAGE) { inclusive = true }
                     }
                 }
@@ -78,7 +98,14 @@ fun AppRoot() {
         }
         composable(NavRoutes.ONBOARDING) {
             OnboardingScreen {
-                nav.navigate(NavRoutes.premium("onboarding")) {
+                val isPremium = BillingManager.getInstance(ctx).isPremiumUser()
+                val nextRoute = if (RemoteConfigManager.isInAppScreenEnabled() && !isPremium) {
+                    NavRoutes.premium("onboarding")
+                } else {
+                    Store.onboarded = true
+                    NavRoutes.MAIN
+                }
+                nav.navigate(nextRoute) {
                     popUpTo(NavRoutes.ONBOARDING) { inclusive = true }
                 }
             }
@@ -193,5 +220,7 @@ fun AppRoot() {
         }
     }
     AppOpenBlackOverlay()
+    val isResumeAdLoading by AppOpenLifecycleTracker.isAdLoading.collectAsStateWithLifecycle()
+    AdLoadingDialog(isVisible = isResumeAdLoading)
 }
 

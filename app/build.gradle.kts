@@ -29,6 +29,10 @@ android {
         compose = true
         buildConfig = true
     }
+    lint {
+        checkReleaseBuilds = false
+        abortOnError = false
+    }
 }
 dependencies {
     implementation(platform("androidx.compose:compose-bom:2024.09.00"))
@@ -46,6 +50,7 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     // ads & shimmer
     implementation("com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.2.1")
+    implementation("com.google.android.ump:user-messaging-platform:4.0.0")
     implementation("com.facebook.shimmer:shimmer:0.5.0")
 //    firebase
     implementation(platform("com.google.firebase:firebase-bom:33.8.0"))

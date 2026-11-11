@@ -45,6 +45,22 @@ object Store {
         get() = r { p.getLong("last_resume_ad", 0L) }
         set(v) = put("last_resume_ad", v)
 
+    var sessionCount: Int
+        get() = r { p.getInt("app_session_count_total", 0) }
+        set(v) = put("app_session_count_total", v)
+
+    var lastInterSession: Int
+        get() = r { p.getInt("last_inter_session", 0) }
+        set(v) = put("last_inter_session", v)
+
+    var counterClicks: Int
+        get() = r { p.getInt("counter_clicks", 0) }
+        set(v) = put("counter_clicks", v)
+
+    var lastCounterAdTime: Long
+        get() = r { p.getLong("last_counter_ad_time", 0L) }
+        set(v) = put("last_counter_ad_time", v)
+
     var onboarded: Boolean
         get() = r { p.getBoolean("ob", false) }
         set(v) = put("ob", v)

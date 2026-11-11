@@ -13,6 +13,7 @@ MERGED from [androidx.biometric:biometric:1.1.0] /Users/macmini/.gradle/caches/9
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/macmini/.gradle/caches/9.3.0/transforms/590c295555cb8243bad85e3af6e620d7/transformed/constraintlayout-2.1.4/AndroidManifest.xml:2:1-11:12
 MERGED from [androidx.appcompat:appcompat:1.2.0] /Users/macmini/.gradle/caches/9.3.0/transforms/29fa4e048f2df4b6f138adb6f32d68c3/transformed/appcompat-1.2.0/AndroidManifest.xml:17:1-24:12
 MERGED from [com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.2.1] /Users/macmini/.gradle/caches/9.3.0/transforms/0e9d354a6c1385099001d1f0a9c2777e/transformed/ads-mobile-sdk-1.2.1/AndroidManifest.xml:2:1-65:12
+MERGED from [com.google.android.ump:user-messaging-platform:4.0.0] /Users/macmini/.gradle/caches/9.3.0/transforms/48fc872695834f7b2995980118aa3fd9/transformed/user-messaging-platform-4.0.0/AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.firebase:firebase-analytics:22.2.0] /Users/macmini/.gradle/caches/9.3.0/transforms/f981c166bf088effa21e752a5782f8d2/transformed/firebase-analytics-22.2.0/AndroidManifest.xml:2:1-9:12
 MERGED from [com.google.android.gms:play-services-measurement:22.2.0] /Users/macmini/.gradle/caches/9.3.0/transforms/fa6a9f09b0084a3abc9db45fc3ca379a/transformed/play-services-measurement-22.2.0/AndroidManifest.xml:17:1-46:12
 MERGED from [com.google.android.gms:play-services-measurement-api:22.2.0] /Users/macmini/.gradle/caches/9.3.0/transforms/7b0278b695375fc4de7dcd535c0ac447/transformed/play-services-measurement-api-22.2.0/AndroidManifest.xml:17:1-39:12
@@ -84,7 +85,6 @@ MERGED from [androidx.compose.runtime:runtime-android:1.7.0] /Users/macmini/.gra
 MERGED from [androidx.datastore:datastore-preferences:1.0.0] /Users/macmini/.gradle/caches/9.3.0/transforms/4362af380fd8b3797e044263f8d3236a/transformed/datastore-preferences-1.0.0/AndroidManifest.xml:17:1-24:12
 MERGED from [androidx.datastore:datastore:1.0.0] /Users/macmini/.gradle/caches/9.3.0/transforms/60f5b12fbb2d227d1cbacf988e27f9ca/transformed/datastore-1.0.0/AndroidManifest.xml:17:1-24:12
 MERGED from [com.google.android.gms:play-services-tasks:18.2.0] /Users/macmini/.gradle/caches/9.3.0/transforms/ca4e1bd6c5dc96c2dafa3d670deb54a9/transformed/play-services-tasks-18.2.0/AndroidManifest.xml:2:1-5:12
-MERGED from [com.google.android.ump:user-messaging-platform:4.0.0] /Users/macmini/.gradle/caches/9.3.0/transforms/48fc872695834f7b2995980118aa3fd9/transformed/user-messaging-platform-4.0.0/AndroidManifest.xml:2:1-7:12
 MERGED from [com.google.firebase:firebase-abt:21.1.1] /Users/macmini/.gradle/caches/9.3.0/transforms/403a33a648d86d7fe5c66b6a3e725b85/transformed/firebase-abt-21.1.1/AndroidManifest.xml:2:1-18:12
 MERGED from [com.google.firebase:firebase-measurement-connector:20.0.1] /Users/macmini/.gradle/caches/9.3.0/transforms/5191ce804f71dd2b8bb0fcedf8320dfd/transformed/firebase-measurement-connector-20.0.1/AndroidManifest.xml:17:1-25:12
 MERGED from [com.google.android.gms:play-services-measurement-sdk-api:22.2.0] /Users/macmini/.gradle/caches/9.3.0/transforms/41912a6622ebf9ce40bb21d19535d870/transformed/play-services-measurement-sdk-api-22.2.0/AndroidManifest.xml:17:1-30:12
@@ -359,6 +359,8 @@ MERGED from [androidx.appcompat:appcompat:1.2.0] /Users/macmini/.gradle/caches/9
 MERGED from [androidx.appcompat:appcompat:1.2.0] /Users/macmini/.gradle/caches/9.3.0/transforms/29fa4e048f2df4b6f138adb6f32d68c3/transformed/appcompat-1.2.0/AndroidManifest.xml:20:5-22:41
 MERGED from [com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.2.1] /Users/macmini/.gradle/caches/9.3.0/transforms/0e9d354a6c1385099001d1f0a9c2777e/transformed/ads-mobile-sdk-1.2.1/AndroidManifest.xml:6:5-44
 MERGED from [com.google.android.libraries.ads.mobile.sdk:ads-mobile-sdk:1.2.1] /Users/macmini/.gradle/caches/9.3.0/transforms/0e9d354a6c1385099001d1f0a9c2777e/transformed/ads-mobile-sdk-1.2.1/AndroidManifest.xml:6:5-44
+MERGED from [com.google.android.ump:user-messaging-platform:4.0.0] /Users/macmini/.gradle/caches/9.3.0/transforms/48fc872695834f7b2995980118aa3fd9/transformed/user-messaging-platform-4.0.0/AndroidManifest.xml:5:5-44
+MERGED from [com.google.android.ump:user-messaging-platform:4.0.0] /Users/macmini/.gradle/caches/9.3.0/transforms/48fc872695834f7b2995980118aa3fd9/transformed/user-messaging-platform-4.0.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.firebase:firebase-analytics:22.2.0] /Users/macmini/.gradle/caches/9.3.0/transforms/f981c166bf088effa21e752a5782f8d2/transformed/firebase-analytics-22.2.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.firebase:firebase-analytics:22.2.0] /Users/macmini/.gradle/caches/9.3.0/transforms/f981c166bf088effa21e752a5782f8d2/transformed/firebase-analytics-22.2.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.android.gms:play-services-measurement:22.2.0] /Users/macmini/.gradle/caches/9.3.0/transforms/fa6a9f09b0084a3abc9db45fc3ca379a/transformed/play-services-measurement-22.2.0/AndroidManifest.xml:20:5-44
@@ -501,8 +503,6 @@ MERGED from [androidx.datastore:datastore:1.0.0] /Users/macmini/.gradle/caches/9
 MERGED from [androidx.datastore:datastore:1.0.0] /Users/macmini/.gradle/caches/9.3.0/transforms/60f5b12fbb2d227d1cbacf988e27f9ca/transformed/datastore-1.0.0/AndroidManifest.xml:20:5-22:41
 MERGED from [com.google.android.gms:play-services-tasks:18.2.0] /Users/macmini/.gradle/caches/9.3.0/transforms/ca4e1bd6c5dc96c2dafa3d670deb54a9/transformed/play-services-tasks-18.2.0/AndroidManifest.xml:3:5-44
 MERGED from [com.google.android.gms:play-services-tasks:18.2.0] /Users/macmini/.gradle/caches/9.3.0/transforms/ca4e1bd6c5dc96c2dafa3d670deb54a9/transformed/play-services-tasks-18.2.0/AndroidManifest.xml:3:5-44
-MERGED from [com.google.android.ump:user-messaging-platform:4.0.0] /Users/macmini/.gradle/caches/9.3.0/transforms/48fc872695834f7b2995980118aa3fd9/transformed/user-messaging-platform-4.0.0/AndroidManifest.xml:5:5-44
-MERGED from [com.google.android.ump:user-messaging-platform:4.0.0] /Users/macmini/.gradle/caches/9.3.0/transforms/48fc872695834f7b2995980118aa3fd9/transformed/user-messaging-platform-4.0.0/AndroidManifest.xml:5:5-44
 MERGED from [com.google.firebase:firebase-abt:21.1.1] /Users/macmini/.gradle/caches/9.3.0/transforms/403a33a648d86d7fe5c66b6a3e725b85/transformed/firebase-abt-21.1.1/AndroidManifest.xml:5:5-7:41
 MERGED from [com.google.firebase:firebase-abt:21.1.1] /Users/macmini/.gradle/caches/9.3.0/transforms/403a33a648d86d7fe5c66b6a3e725b85/transformed/firebase-abt-21.1.1/AndroidManifest.xml:5:5-7:41
 MERGED from [com.google.firebase:firebase-measurement-connector:20.0.1] /Users/macmini/.gradle/caches/9.3.0/transforms/5191ce804f71dd2b8bb0fcedf8320dfd/transformed/firebase-measurement-connector-20.0.1/AndroidManifest.xml:20:5-44

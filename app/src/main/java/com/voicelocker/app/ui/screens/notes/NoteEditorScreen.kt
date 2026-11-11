@@ -2,6 +2,7 @@
 
 package com.voicelocker.app.ui.screens.notes
 
+import android.app.Activity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
+import com.voicelocker.ads.CounterAdManager
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.data.model.Note
 import com.voicelocker.app.data.model.langByName
@@ -95,14 +97,28 @@ fun NoteEditorScreen(nav: NavHostController, id: String?) {
     }
 
     fun save(title: String) {
-        val list = Store.notes.toMutableList()
-        if (existing != null) {
-            list.firstOrNull { it.id == existing.id }?.text = text
-        } else {
-            list.add(0, Note(System.currentTimeMillis().toString(), title.ifBlank { "New Note" }, text))
+        val act = ctx as? Activity
+        CounterAdManager.onAction(
+            activity = act,
+            screenKey = "voice_note_screen",
+            adKey = "interstitial"
+        ) {
+            val list = Store.notes.toMutableList()
+            if (existing != null) {
+                list.firstOrNull { it.id == existing.id }?.text = text
+            } else {
+                list.add(0, Note(System.currentTimeMillis().toString(), title.ifBlank { "New Note" }, text))
+            }
+            nav.popBackStack()
+            Store.saveNotes(list)
         }
-        nav.popBackStack()
-        Store.saveNotes(list)
+    }
+
+    LaunchedEffect(Unit) {
+        android.util.Log.d(
+            "ADSMANAGER",
+            "[voice_note_screen] New Note Screen (NoteEditor) opened. Native top enabled=${com.voicelocker.ads.AdManager.isNativeEnabled("voice_note_screen")}, template=2 (Medium Native), fallback=Medium Banner on top"
+        )
     }
 
     Page(
@@ -112,18 +128,10 @@ fun NoteEditorScreen(nav: NavHostController, id: String?) {
             nav.popBackStack()
         },
         adScreenKey = "voice_note_screen",
-        nativeTemplate = 1,
-        actions = {
-            if (phase == 2) {
-                IconButton(onClick = {}) {
-                    Icon(
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "Edit",
-                        tint = c.primary
-                    )
-                }
-            }
-        },
+        nativeTemplate = 2,
+        nativeAdOnTop = true,
+        fallbackInlineBanner = true,
+        actions = {},
         scroll = phase != 1,
         bottom = when (phase) {
             1 -> ({
@@ -152,7 +160,15 @@ fun NoteEditorScreen(nav: NavHostController, id: String?) {
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Button(
-                        onClick = { start() },
+                        onClick = {
+                            CounterAdManager.onAction(
+                                activity = ctx as? Activity,
+                                screenKey = "voice_note_screen",
+                                adKey = "interstitial"
+                            ) {
+                                start()
+                            }
+                        },
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,

@@ -1,5 +1,6 @@
 package com.voicelocker.app.ui.screens.voice
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.voicelocker.ads.AppAdaptiveBannerTop
 import com.voicelocker.ads.AppNativeAdView
+import com.voicelocker.ads.CounterAdManager
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.data.model.langByName
 import com.voicelocker.app.ui.components.*
@@ -34,6 +36,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun RecordScreen(nav: NavHostController) {
     val ctx = LocalContext.current
+    val act = ctx as? Activity
     val c = MaterialTheme.colorScheme
     val speech = rememberSpeech()
     var phase by remember { mutableIntStateOf(0) } // 0 idle, 1 listening, 2 done
@@ -156,8 +159,14 @@ fun RecordScreen(nav: NavHostController) {
                 AppButton(
                     text = "Continue",
                     onClick = {
-                        Store.setVoicePhrase(text)
-                        nav.go("voice", "record")
+                        CounterAdManager.onAction(
+                            activity = act,
+                            screenKey = "voice_record_screen",
+                            adKey = "interstitial"
+                        ) {
+                            Store.setVoicePhrase(text)
+                            nav.go("voice", "record")
+                        }
                     },
                     modifier = Modifier.weight(1f),
                     height = 52.dp,
@@ -166,8 +175,14 @@ fun RecordScreen(nav: NavHostController) {
                 AppButton(
                     text = "Record Again",
                     onClick = {
-                        text = ""
-                        phase = 0
+                        CounterAdManager.onAction(
+                            activity = act,
+                            screenKey = "voice_record_screen",
+                            adKey = "interstitial"
+                        ) {
+                            text = ""
+                            phase = 0
+                        }
                     },
                     modifier = Modifier.weight(1f),
                     height = 52.dp,

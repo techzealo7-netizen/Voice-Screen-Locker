@@ -28,12 +28,20 @@ fun PatternScreen(nav: NavHostController) {
     var err by remember { mutableStateOf(false) }
     var hint by remember { mutableStateOf<String?>(null) }
 
+    LaunchedEffect(Unit) {
+        android.util.Log.d(
+            "ADSMANAGER",
+            "[set_pattern_lock_screen] Set Pattern Screen opened. Native bottom enabled=${com.voicelocker.ads.AdManager.isNativeEnabled("set_pattern_lock_screen")}, template=1, fallback=small adaptive banner"
+        )
+    }
+
     Page(
         title = "Set Pattern Lock",
         onBack = { nav.popBackStack() },
         scroll = false,
         adScreenKey = "set_pattern_lock_screen",
-        nativeTemplate = 1
+        nativeTemplate = 1,
+        fallbackInlineBanner = false
     ) {
         StepDots(stage, err)
         Column(Modifier.fillMaxWidth().padding(top = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {

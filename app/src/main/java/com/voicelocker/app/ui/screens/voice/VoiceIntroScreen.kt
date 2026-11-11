@@ -1,5 +1,6 @@
 package com.voicelocker.app.ui.screens.voice
 
+import android.app.Activity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.voicelocker.ads.AppAdaptiveBannerTop
 import com.voicelocker.ads.AppNativeAdView
+import com.voicelocker.ads.CounterAdManager
 import com.voicelocker.app.R
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.data.model.langByName
@@ -34,6 +37,8 @@ import com.voicelocker.app.ui.theme.InterFontFamily
 
 @Composable
 fun VoiceIntroScreen(nav: NavHostController) {
+    val ctx = LocalContext.current
+    val activity = ctx as? Activity
     val c = MaterialTheme.colorScheme
     var isVoiceActive by remember { mutableStateOf(Store.voiceEnabled && Store.hasVoice) }
     var langDialogVisible by remember { mutableStateOf(false) }
@@ -41,6 +46,13 @@ fun VoiceIntroScreen(nav: NavHostController) {
 
     LaunchedEffect(Store.voiceEnabled, Store.hasVoice) {
         isVoiceActive = Store.voiceEnabled && Store.hasVoice
+    }
+
+    LaunchedEffect(Unit) {
+        android.util.Log.d(
+            "ADSMANAGER",
+            "[voice_lock_screen] Voice Lock Screen opened. Native bottom enabled=${com.voicelocker.ads.AdManager.isNativeEnabled("voice_lock_screen")}, template=${com.voicelocker.ads.AdManager.getNativeTemplate("voice_lock_screen")}"
+        )
     }
 
     val toggleVoice = {
@@ -178,7 +190,13 @@ fun VoiceIntroScreen(nav: NavHostController) {
         // Continue button (matching card style with themed text)
         Surface(
             onClick = {
-                if (Store.hasVoice) nav.popBackStack() else nav.navigate("perms")
+                CounterAdManager.onAction(
+                    activity = activity,
+                    screenKey = "voice_lock_screen",
+                    adKey = "interstitial"
+                ) {
+                    if (Store.hasVoice) nav.popBackStack() else nav.navigate("perms")
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()

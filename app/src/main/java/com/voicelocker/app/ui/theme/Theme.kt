@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import com.voicelocker.app.data.local.Store
 
-private val LightScheme = lightColorScheme(
+internal val LightScheme = lightColorScheme(
     primary = Blue,
     onPrimary = Color.White,
     background = Color(0xFFF4F6FB),
@@ -27,7 +27,7 @@ private val LightScheme = lightColorScheme(
     outline = Color(0xFFE3E7EF),
 )
 
-private val DarkScheme = darkColorScheme(
+internal val DarkScheme = darkColorScheme(
     primary = Blue,
     onPrimary = Color.White,
     background = Color(0xFF0E1320),

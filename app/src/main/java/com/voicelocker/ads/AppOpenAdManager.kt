@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 object AppOpenAdManager {
-    private const val TAG = "AppOpenAdManager"
+    private const val TAG = "ADSMANAGER"
     private const val AD_EXPIRE_TIME = 4 * 60 * 60 * 1000L
     private var appOpenAd: AppOpenAd? = null
     @Volatile
@@ -194,22 +194,23 @@ object AppOpenAdManager {
 
     fun showAdIfAvailable(
         activity: Activity,
+        onShow: (() -> Unit)? = null,
         onComplete: () -> Unit
     ) {
         if (BillingManager.getInstance(activity).isPremiumUser()) {
-            Log.d(TAG, "👑 [AppOpen] Premium user — skipping App Open ad")
+            Log.d(TAG, "👑 [app_open_resume] Premium user — skipping App Open ad")
             markInactive()
             onComplete()
             return
         }
         if (isShowing) {
-            Log.w(TAG, "⚠️ [AppOpen] Already showing — skipping show")
+            Log.w(TAG, "⚠️ [app_open_resume] Already showing — skipping show")
             return
         }
 
         val ad = appOpenAd
         if (ad == null || !isAdAvailable()) {
-            Log.d(TAG, "⚠️ [AppOpen] No App Open Ad available")
+            Log.d(TAG, "⚠️ [app_open_resume] No App Open Ad available")
             markInactive()
             onComplete()
             return
@@ -221,12 +222,13 @@ object AppOpenAdManager {
 
         ad.adEventCallback = object : AppOpenAdEventCallback {
             override fun onAdShowedFullScreenContent() {
-                Log.d(TAG, "🎉 [AppOpen] Show success (fullscreen displayed)")
+                Log.d(TAG, "🎉 [app_open_resume] Show success (fullscreen displayed)")
+                Handler(Looper.getMainLooper()).post { onShow?.invoke() }
             }
 
             override fun onAdDismissedFullScreenContent() {
                 Handler(Looper.getMainLooper()).post {
-                    Log.d(TAG, "👋 [AppOpen] Ad dismissed")
+                    Log.d(TAG, "👋 [app_open_resume] Ad dismissed")
                     appOpenAd = null
                     isShowing = false
                     AdActivityGuard.endShowingAd()
@@ -239,7 +241,7 @@ object AppOpenAdManager {
             override fun onAdFailedToShowFullScreenContent(
                 error: com.google.android.libraries.ads.mobile.sdk.common.FullScreenContentError
             ) {
-                Log.e(TAG, "❌ [AppOpen] Failed to show: code=${error.code}, message='${error.message}'")
+                Log.e(TAG, "❌ [app_open_resume] Failed to show: code=${error.code}, message='${error.message}'")
                 appOpenAd = null
                 isShowing = false
                 AdActivityGuard.endShowingAd()
@@ -248,10 +250,10 @@ object AppOpenAdManager {
                 onComplete()
             }
 
-            override fun onAdClicked() { Log.d(TAG, "👆 [AppOpen] Ad clicked") }
-            override fun onAdImpression() { Log.d(TAG, "👁️ [AppOpen] Show impression recorded") }
+            override fun onAdClicked() { Log.d(TAG, "👆 [app_open_resume] Ad clicked") }
+            override fun onAdImpression() { Log.d(TAG, "👁️ [app_open_resume] Show impression recorded") }
             override fun onAdPaid(value: com.google.android.libraries.ads.mobile.sdk.common.AdValue) {
-                Log.d(TAG, "💰 [AppOpen] Ad paid: ${value.valueMicros} ${value.currencyCode}")
+                Log.d(TAG, "💰 [app_open_resume] Ad paid: ${value.valueMicros} ${value.currencyCode}")
             }
         }
 

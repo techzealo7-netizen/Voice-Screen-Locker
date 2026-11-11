@@ -1,5 +1,6 @@
 package com.voicelocker.app.ui.screens.home
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -35,6 +36,7 @@ import androidx.navigation.NavHostController
 import com.voicelocker.ads.AppAdaptiveBannerTop
 import com.voicelocker.ads.AppNativeAdView
 import com.voicelocker.ads.AppOpenAdManager
+import com.voicelocker.ads.ConsentManager
 import com.voicelocker.app.R
 import com.voicelocker.app.data.local.Store
 import com.voicelocker.app.ui.components.LanguageDialog
@@ -97,14 +99,6 @@ fun SettingsTab(nav: NavHostController, onBack: (() -> Unit)? = null) {
     var rate by remember { mutableStateOf(false) }
     var sys by remember { mutableStateOf(false) }
     val pkg = ctx.packageName
-
-    DisposableEffect(Unit) {
-        AppOpenAdManager.setSettingsScreenActive(true)
-        onDispose {
-            AppOpenAdManager.setSettingsScreenActive(false)
-            AppOpenAdManager.suppressAppOpenFor(5000L)
-        }
-    }
 
     fun open(i: Intent) {
         AppOpenAdManager.suppressAppOpenFor(60_000L)
@@ -285,6 +279,19 @@ fun SettingsTab(nav: NavHostController, onBack: (() -> Unit)? = null) {
                         open(Intent(Intent.ACTION_VIEW, Uri.parse("https://sites.google.com/view/voicelockscren/home")))
                     }
                 )
+                if (ConsentManager.isPrivacyOptionsRequired(ctx)) {
+                    SettingItem(
+                        icon = Icons.Filled.Shield,
+                        title = "Privacy Consent",
+                        sub = "Manage your ads and data consent",
+                        onClick = {
+                            val act = ctx as? Activity
+                            if (act != null) {
+                                ConsentManager.showPrivacyOptionsForm(act)
+                            }
+                        }
+                    )
+                }
                 SettingItem(
                     icon = Icons.Filled.Stars,
                     title = "Rates Us",
