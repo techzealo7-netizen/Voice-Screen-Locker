@@ -8,13 +8,13 @@ plugins {
 }
 android {
     namespace = "com.voicelocker.app"
-    compileSdk = 34
+    compileSdk = 36
     defaultConfig {
         applicationId = "com.voicescreenlock.security.key.lock.voice.pin.pattern.voicelock"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.1"
+        targetSdk = 36
+        versionCode = 2
+        versionName = "1.2"
     }
     buildTypes {
         release {
